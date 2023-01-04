@@ -5,7 +5,7 @@ const whitelist = [/192\.168\./, 'https://paritysl-frontend.onrender.com/'];
 const cors = {
   origin: (origin, callback) => {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
-      callback(null, ture);
+      callback(null, true);
     } else {
       callback(createError.Unauthorized("Blocked By Cors"));
     }
