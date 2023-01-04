@@ -1,6 +1,6 @@
 
 const cors = {
-  origin: [/192\.168\.1\.117/, /192\.168\.56\.101/],
+  origin: [/192\.168\./, 'https://paritysl-frontend.onrender.com/'],
   methods: ['GET', 'POST', 'PUT'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization'],
