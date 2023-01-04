@@ -1,9 +1,10 @@
 const createError = require("http-errors");
 
-const whitelist = [/192\.168\./, 'https://paritysl-frontend.onrender.com/'];
+const whitelist = ["http://192.168.56.101:3000", 'https://paritysl-frontend.onrender.com/'];
 
 const cors = {
   origin: (origin, callback) => {
+    console.log(origin);
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
