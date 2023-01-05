@@ -38,7 +38,7 @@ class PostService {
     }
     return;
   }
-  static async all() {
+  static async all(user) {
     const allPosts = await prisma.post.findMany({
       include: {
         carer: true

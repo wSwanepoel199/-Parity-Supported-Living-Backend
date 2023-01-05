@@ -8,7 +8,8 @@ class AuthService {
   // register new user
   static async register(data) {
     data.password = bcrypt.hashSync(data.password, 8);
-    await prisma.user.create({
+    delete data.showPassword;
+    const user = await prisma.user.create({
       data
     });
     return;

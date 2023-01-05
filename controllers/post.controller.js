@@ -31,7 +31,7 @@ class PostController {
   };
   static all = async (req, res, next) => {
     try {
-      const posts = await post.all();
+      const posts = await post.all(req.user);
 
       res.status(200).json({
         status: 200,
