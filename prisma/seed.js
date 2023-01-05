@@ -89,18 +89,32 @@ const posts = [
 
 async function seed() {
   console.log("Seeding....");
-  for (const u of users) {
-    u.password = bcrypt.hashSync(u.password, 8);
+  if (process.env.NODE_ENV === "development") {
+    for (const u of users) {
+      u.password = bcrypt.hashSync(u.password, 8);
+      const user = await prisma.user.create({
+        data: u
+      });
+      console.log(`Created user with id: ${user.id}`);
+    }
+    for (const p of posts) {
+      const post = await prisma.post.create({
+        data: p
+      });
+      console.log(`Created post withg id: ${post.id}`);
+    }
+  } else if (process.env.NODE_ENV === "production") {
+    const admin = {
+      email: "admin@paritysl.com",
+      password: "admin",
+      name: "ParityAdmin",
+      role: "Admin"
+    };
+    admin.password = bcrypt.hashSync(admin.password, 8);
     const user = await prisma.user.create({
-      data: u
+      data: admin
     });
-    console.log(`Created user with id: ${user.id}`);
-  }
-  for (const p of posts) {
-    const post = await prisma.post.create({
-      data: p
-    });
-    console.log(`Created post withg id: ${post.id}`);
+    console.log(`Created ${admn.name} with id ${user.userId}`);
   }
   console.log("Done Seeding");
 }
