@@ -22,7 +22,7 @@ class AuthController {
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
           httpOnly: true,
-          SameSite: "None",
+          sameSite: "None",
           secure: true,
           // maxAge: (24 * 60 * 60 * 1000 * 200)
           maxAge: (1000 * 60 * 60 * 24)
@@ -64,7 +64,7 @@ class AuthController {
       await auth.logout(req.cookies);
       res.clearCookie('jwt', {
         httpOnly: true,
-        SameSite: "None",
+        sameSite: "None",
         secure: true,
       });
       res.sendStatus(204);
