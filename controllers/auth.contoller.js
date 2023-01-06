@@ -18,13 +18,23 @@ class AuthController {
   static login = async (req, res, next) => {
     try {
       const data = await auth.login(req.body);
-      res.cookie('jwt', data.token, {
-        httpOnly: true,
-        // SameSite: "None", 
-        // secure: true, 
-        // maxAge: (24 * 60 * 60 * 1000 * 200)
-        maxAge: (1000 * 60 * 60 * 24)
-      });
+      if (process.env.NODE_ENV === "production") {
+        res.cookie('jwt', data.token, {
+          httpOnly: true,
+          SameSite: "None",
+          secure: true,
+          // maxAge: (24 * 60 * 60 * 1000 * 200)
+          maxAge: (1000 * 60 * 60 * 24)
+        });
+      } else {
+        res.cookie('jwt', data.token, {
+          httpOnly: true,
+          // SameSite: "None",
+          // secure: true,
+          // maxAge: (24 * 60 * 60 * 1000 * 200)
+          maxAge: (1000 * 60 * 60 * 24)
+        });
+      }
       res.status(200).json({
         msg: "Logged In Successfully",
         data: data.user
@@ -53,8 +63,8 @@ class AuthController {
       await auth.logout(req.cookies);
       res.clearCookie('jwt', {
         httpOnly: true,
-        // SameSite: "None", 
-        // secure: true, 
+        SameSite: "None",
+        secure: true,
       });
       res.sendStatus(204);
     }
