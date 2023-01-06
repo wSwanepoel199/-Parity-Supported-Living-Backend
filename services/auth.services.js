@@ -2,6 +2,7 @@ const prisma = require('../lib/prisma');
 const bcrypt = require('bcryptjs');
 const createError = require('http-errors');
 const jwt = require('../utils/jwt');
+const exclude = require('../utils/exlude');
 const RefreshTokenService = require('./refreshToken.services');
 
 class AuthService {
@@ -18,6 +19,7 @@ class AuthService {
   static async login(data) {
     const { email, password } = data;
     if (!email || !password) throw createError.BadRequest({ message: "Email or Password not provided", data: data });
+    console.log(email);
     const user = await prisma.user.findUnique({
       where: {
         email
@@ -36,13 +38,14 @@ class AuthService {
     for (let key of ["showPassword", "createdAt", "updatedAt"]) {
       delete data[key];
     }
+    data.password = bcrypt.hashSync(data.password, 8);
     const updatedUser = await prisma.user.update({
       where: {
         userId: data.userId
       },
       data
     });
-    if (!updatedUser) return createError.NotFound("No User with that id");
+    if (!updatedUser) throw createError.NotFound("No User with that id");
     return;
   }
   // logs out existing user
@@ -51,9 +54,20 @@ class AuthService {
     await RefreshTokenService.remove(data.jwt);
     return;
   }
+  static async delete(data) {
+    const target = await prisma.user.delete({
+      where: {
+        userId: data.userId
+      }
+    });
+    if (!target) throw createError.NotFound("That user does not exist");
+    return target;
+  }
   static async all() {
     const allUsers = await prisma.user.findMany();
-    return allUsers;
+    const users = allUsers.filter(item => item.name !== "ParityAdmin");
+    await users.forEach((user) => exclude(user, ['password']));
+    return users;
   }
 }
 

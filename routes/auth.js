@@ -14,5 +14,7 @@ router.put('/update', Auth.user, Auth.admin, userController.update);
 
 router.get('/logout', userController.logout);
 
+router.post('/delete', Auth.user, Auth.admin, userController.delete);
+
 
 module.exports = router;

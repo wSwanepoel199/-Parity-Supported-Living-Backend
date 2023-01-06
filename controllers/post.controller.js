@@ -29,6 +29,16 @@ class PostController {
       next(createError(err.statusCode, err.message));
     }
   };
+  static delete = async (req, res, next) => {
+    try {
+      await post.delete(req.body);
+      res.sendStatus(200);
+    }
+    catch (err) {
+      res.status(err.statusCode).json(createError(err.statusCode, err.message));
+      next(createError(err.statusCode, err.message));
+    }
+  };
   static all = async (req, res, next) => {
     try {
       const posts = await post.all(req.user);

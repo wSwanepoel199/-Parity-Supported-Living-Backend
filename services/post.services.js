@@ -6,7 +6,9 @@ class PostService {
     const newPost = await prisma.post.create({
       data
     });
-    if (!newPost) return createError.BadRequest("Could not create post");
+    if (!newPost) {
+      throw createError.BadRequest("Could not create post");
+    }
     return;
   }
   static async update(data) {
@@ -19,23 +21,17 @@ class PostService {
       },
       data
     });
-    if (!updatedPost) return createError.NotFound("No Post with that id");
+    if (!updatedPost) throw createError.NotFound("No Post with that id");
     return;
   }
-  static async remove(data) {
-    const post = await prisma.post.findUnique({
+  static async delete(data) {
+    const post = await prisma.post.delete({
       where: {
-        id: data.id
+        postId: data.postId
       }
     });
-    if (post) {
-      await prisma.post.delete({
-        where: {
-          id: data.id
-        }
-      });
-    }
-    return;
+    if (!post) throw createError.NotFound("Post does not exist");
+    return post;
   }
   static async all(user) {
     const allPosts = await prisma.post.findMany({

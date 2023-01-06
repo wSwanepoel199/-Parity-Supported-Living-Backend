@@ -25,8 +25,8 @@ model User {
 
 model Post {
   id Int @id @default(autoincrement())
-  carer User @relation("Carer", fields:[carerId], references: [id])
-  carerId Int
+  carer User? @relation("Carer", fields:[carerId], references: [id])
+  carerId Int?
   client String?
   hours Int?
   date DateTime?

@@ -74,6 +74,16 @@ class AuthController {
       next(createError(err.statusCode, err.message));
     }
   };
+  static delete = async (req, res, next) => {
+    try {
+      await auth.delete(req.body);
+      res.sendStatus(200);
+    }
+    catch (err) {
+      res.status(err.statusCode).json(createError(err.statusCode, err.message));
+      next(createError(err.statusCode, err.message));
+    }
+  };
   static all = async (req, res, next) => {
     try {
       const users = await auth.all();
