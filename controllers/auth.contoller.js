@@ -18,6 +18,7 @@ class AuthController {
   static login = async (req, res, next) => {
     try {
       const data = await auth.login(req.body);
+      console.log(process.env.NODE_ENV === "production");
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
           httpOnly: true,
