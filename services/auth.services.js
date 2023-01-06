@@ -31,6 +31,20 @@ class AuthService {
     user.accessToken = await jwt.signAccessToken(user.userId);
     return { user: user, token: refreshToken };
   }
+  // updates existing user
+  static async update(data) {
+    for (let key of ["showPassword", "createdAt", "updatedAt"]) {
+      delete data[key];
+    }
+    const updatedUser = await prisma.user.update({
+      where: {
+        userId: data.userId
+      },
+      data
+    });
+    if (!updatedUser) return createError.NotFound("No User with that id");
+    return;
+  }
   // logs out existing user
   static async logout(data) {
     if (!data?.jwt) return;

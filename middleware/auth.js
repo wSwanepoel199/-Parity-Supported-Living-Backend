@@ -6,7 +6,6 @@ class Auth {
   static user = async (req, res, next) => {
     if (!req.headers.authorization) return next(createError.Unauthorized('Not Authorised'));
     const token = req.headers.authorization.split(' ')[1];
-    console.log(token);
     if (!token) {
       return next(createError.Unauthorized('Token has not been provided'));
     }

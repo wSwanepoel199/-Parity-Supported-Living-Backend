@@ -10,6 +10,8 @@ router.post('/register', Auth.user, Auth.admin, userController.register);
 
 router.post('/login', userController.login);
 
+router.put('/update', Auth.user, Auth.admin, userController.update);
+
 router.get('/logout', userController.logout);
 
 

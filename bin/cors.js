@@ -4,7 +4,6 @@ const whitelist = ["http://192.168.56.101:3000", 'https://paritysl-frontend.onre
 
 const cors = {
   origin: (origin, callback) => {
-    console.log(origin);
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {

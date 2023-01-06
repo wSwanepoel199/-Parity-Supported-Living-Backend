@@ -3,7 +3,6 @@ const prisma = require("../lib/prisma");
 
 class PostService {
   static async create(data) {
-    console.log(data);
     const newPost = await prisma.post.create({
       data
     });
