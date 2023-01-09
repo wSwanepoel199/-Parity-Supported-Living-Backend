@@ -30,7 +30,7 @@ class AuthController {
       } else {
         res.cookie('jwt', data.token, {
           httpOnly: true,
-          // SameSite: "None",
+          // sameSite: "None",
           // secure: true,
           // maxAge: (24 * 60 * 60 * 1000 * 200)
           maxAge: (1000 * 60 * 60 * 24)
