@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', Auth.user, postController.all);
 router.post('/create', Auth.user, postController.create);
-router.put('/update', Auth.user, postController.update);
+router.put('/update', Auth.user, Auth.admin, postController.update);
 router.post('/delete', Auth.user, Auth.admin, postController.delete);
 
 module.exports = router;
