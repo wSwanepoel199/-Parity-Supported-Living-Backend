@@ -7,7 +7,9 @@ class AuthController {
       await auth.register(req.body);
       res.status(201).json({
         status: 201,
-        msg: "User Created"
+        data: {
+          message: "User Created Successfully"
+        }
       });
     }
     catch (err) {
@@ -30,15 +32,18 @@ class AuthController {
       } else {
         res.cookie('jwt', data.token, {
           httpOnly: true,
-          // SameSite: "None",
+          // sameSite: "None",
           // secure: true,
           // maxAge: (24 * 60 * 60 * 1000 * 200)
           maxAge: (1000 * 60 * 60 * 24)
         });
       }
       res.status(200).json({
-        msg: "Logged In Successfully",
-        data: data.user
+        status: 200,
+        data: {
+          message: "Logged In Successfully",
+          data: data.user
+        }
       });
     }
     catch (err) {
@@ -51,7 +56,9 @@ class AuthController {
       await auth.update(req.body);
       res.status(200).json({
         status: 200,
-        msg: 'user successfully updated'
+        data: {
+          messsage: 'User successfully updated'
+        }
       });
     }
     catch (err) {
@@ -62,12 +69,23 @@ class AuthController {
   static logout = async (req, res, next) => {
     try {
       await auth.logout(req.cookies);
-      res.clearCookie('jwt', {
-        httpOnly: true,
-        sameSite: "None",
-        secure: true,
+      if (process.env.NODE_ENV === "production") {
+        res.clearCookie('jwt', {
+          httpOnly: true,
+          sameSite: "None",
+          secure: true,
+        });
+      } else {
+        res.clearCookie('jwt', {
+          httpOnly: true,
+        });
+      }
+      res.status(204).json({
+        status: 204,
+        data: {
+          message: 'Logged Out Successfully'
+        }
       });
-      res.sendStatus(204);
     }
     catch (err) {
       res.status(err.statusCode).json(createError(err.statusCode, err.message));
@@ -77,7 +95,12 @@ class AuthController {
   static delete = async (req, res, next) => {
     try {
       await auth.delete(req.body);
-      res.sendStatus(200);
+      res.status(200).json({
+        status: 200,
+        data: {
+          message: 'User deleted successfully'
+        }
+      });
     }
     catch (err) {
       res.status(err.statusCode).json(createError(err.statusCode, err.message));
@@ -89,8 +112,10 @@ class AuthController {
       const users = await auth.all();
       res.status(200).json({
         status: 200,
-        msg: "All Users Found",
-        data: users
+        data: {
+          message: "All Users Found",
+          data: users
+        }
       });
     }
     catch (err) {

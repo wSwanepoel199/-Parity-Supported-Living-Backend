@@ -38,7 +38,7 @@ class AuthService {
     for (let key of ["showPassword", "createdAt", "updatedAt"]) {
       delete data[key];
     }
-    data.password = bcrypt.hashSync(data.password, 8);
+    if (data.password) data.password = bcrypt.hashSync(data.password, 8);
     const updatedUser = await prisma.user.update({
       where: {
         userId: data.userId
