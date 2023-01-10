@@ -8,7 +8,9 @@ class PostController {
       await post.create(req.body);
       res.status(201).json({
         status: 201,
-        msg: 'created successfully'
+        data: {
+          message: 'Post created successfully'
+        }
       });
     }
     catch (err) {
@@ -21,7 +23,9 @@ class PostController {
       await post.update(req.body);
       res.status(200).json({
         status: 200,
-        msg: 'Successfully Updated Post'
+        data: {
+          message: 'Successfully Updated Post'
+        }
       });
     }
     catch (err) {
@@ -32,7 +36,12 @@ class PostController {
   static delete = async (req, res, next) => {
     try {
       await post.delete(req.body);
-      res.sendStatus(200);
+      res.status(200).json({
+        status: 200,
+        data: {
+          message: 'Post deleted successfully'
+        }
+      });
     }
     catch (err) {
       res.status(err.statusCode).json(createError(err.statusCode, err.message));
@@ -42,11 +51,12 @@ class PostController {
   static all = async (req, res, next) => {
     try {
       const posts = await post.all(req.user);
-
       res.status(200).json({
         status: 200,
-        msg: "All Posts Found",
-        data: posts
+        data: {
+          message: "All Posts Found",
+          data: posts
+        }
       });
     }
     catch (err) {
