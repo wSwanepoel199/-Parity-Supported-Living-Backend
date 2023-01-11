@@ -1,10 +1,12 @@
 const auth = require('../services/auth.services');
+const icon = require('../services/icon.service');
 const createError = require('http-errors');
 
 class AuthController {
   static register = async (req, res, next) => {
     try {
-      await auth.register(req.body);
+      const user = await auth.register(req.body);
+      await icon.genIcon(user.id, user.userId);
       res.status(201).json({
         status: 201,
         data: {
