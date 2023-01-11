@@ -1,7 +1,7 @@
-const { PrismaClient } = require("@prisma/client");
-const bcrypt = require('bcryptjs');
+const prisma = require("../lib/prisma");
 
-const prisma = new PrismaClient();
+const userService = require('../services/auth.services');
+const iconService = require('../services/icon.service');
 
 
 // email String?
@@ -90,22 +90,19 @@ const posts = [
 async function seed() {
   console.log("Seeding....");
   console.log(process.env.ENV);
-  const { genAvatar } = await import('../utils/avatarGenerator.mjs');
+  const admin = {
+    email: "admin@paritysl.com",
+    password: "admin",
+    name: "ParityAdmin",
+    role: "Admin"
+  };
+  const user = await userService.register(admin);
+  await iconService.genIcon(user.id, user.userId);
+  console.log(`Created ${user.name} with id ${user.userId}`);
   if (process.env.ENV === "development") {
     for (const u of users) {
-      u.password = bcrypt.hashSync(u.password, 8);
-      const user = await prisma.user.create({
-        data: u
-      });
-      const avatar = await genAvatar(user.userId);
-      await prisma.user.update({
-        where: {
-          userId: user.userId
-        },
-        data: {
-          icon: avatar
-        }
-      });
+      const user = await userService.register(u);
+      await iconService.genIcon(user.id, user.userId);
       console.log(`Created user with id: ${user.id}`);
     }
     for (const p of posts) {
@@ -115,26 +112,6 @@ async function seed() {
       console.log(`Created post withg id: ${post.id}`);
     }
   }
-  const admin = {
-    email: "admin@paritysl.com",
-    password: "admin",
-    name: "ParityAdmin",
-    role: "Admin"
-  };
-  admin.password = bcrypt.hashSync(admin.password, 8);
-  const user = await prisma.user.create({
-    data: admin
-  });
-  const avatar = await genAvatar(user.userId);
-  await prisma.user.update({
-    where: {
-      userId: user.userId
-    },
-    data: {
-      icon: avatar
-    }
-  });
-  console.log(`Created ${user.name} with id ${user.userId}`);
   console.log("Done Seeding");
 }
 
