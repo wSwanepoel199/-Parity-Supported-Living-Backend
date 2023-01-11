@@ -17,16 +17,16 @@ class AuthService {
     const user = await prisma.user.create({
       data
     });
-    const avatar = await genAvatar(user.userId);
-    await prisma.user.update({
-      where: {
-        userId: user.userId
-      },
-      data: {
-        icon: avatar
-      }
-    });
-    return;
+    // const avatar = await genAvatar(user.userId);
+    // await prisma.user.update({
+    //   where: {
+    //     userId: user.userId
+    //   },
+    //   data: {
+    //     icon: avatar
+    //   }
+    // });
+    return user;
   }
   // logs in existing user
   static async login(data) {
