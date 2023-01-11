@@ -4,14 +4,27 @@ const createError = require('http-errors');
 const jwt = require('../utils/jwt');
 const exclude = require('../utils/exlude');
 const RefreshTokenService = require('./refreshToken.services');
+// const genAvatar = require('../utils/avatarGenerator.mjs');
+;
+
 
 class AuthService {
   // register new user
   static async register(data) {
+    const { genAvatar } = await import('../utils/avatarGenerator.mjs');
     data.password = bcrypt.hashSync(data.password, 8);
     delete data.showPassword;
     const user = await prisma.user.create({
       data
+    });
+    const avatar = await genAvatar(user.userId);
+    await prisma.user.update({
+      where: {
+        userId: user.userId
+      },
+      data: {
+        icon: avatar
+      }
     });
     return;
   }
@@ -19,7 +32,6 @@ class AuthService {
   static async login(data) {
     const { email, password } = data;
     if (!email || !password) throw createError.BadRequest({ message: "Email or Password not provided", data: data });
-    console.log(email);
     const user = await prisma.user.findUnique({
       where: {
         email
