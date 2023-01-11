@@ -8,6 +8,8 @@
     "studio": "npx prisma studio"
   },
   "dependencies": {
+    "@dicebear/collection": "^5.0.2",
+    "@dicebear/core": "^5.0.2",
     "@prisma/client": "^4.7.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "~1.4.4",

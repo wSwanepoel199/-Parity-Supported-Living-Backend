@@ -15,6 +15,7 @@ model User {
   email String? @unique
   name String?
   password String?
+  icon String ?
   role Role @default(Carer)
   posts Post[] @relation("Carer")
   userId String @unique @default(uuid())

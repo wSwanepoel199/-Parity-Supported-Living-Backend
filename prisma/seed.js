@@ -90,11 +90,21 @@ const posts = [
 async function seed() {
   console.log("Seeding....");
   console.log(process.env.ENV);
+  const { genAvatar } = await import('../utils/avatarGenerator.mjs');
   if (process.env.ENV === "development") {
     for (const u of users) {
       u.password = bcrypt.hashSync(u.password, 8);
       const user = await prisma.user.create({
         data: u
+      });
+      const avatar = await genAvatar(user.userId);
+      await prisma.user.update({
+        where: {
+          userId: user.userId
+        },
+        data: {
+          icon: avatar
+        }
       });
       console.log(`Created user with id: ${user.id}`);
     }
@@ -115,7 +125,16 @@ async function seed() {
   const user = await prisma.user.create({
     data: admin
   });
-  console.log(`Created ${admin.name} with id ${user.userId}`);
+  const avatar = await genAvatar(user.userId);
+  await prisma.user.update({
+    where: {
+      userId: user.userId
+    },
+    data: {
+      icon: avatar
+    }
+  });
+  console.log(`Created ${user.name} with id ${user.userId}`);
   console.log("Done Seeding");
 }
 

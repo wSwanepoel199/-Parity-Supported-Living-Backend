@@ -26,6 +26,7 @@ class RefreshTokenService {
     return token.token;
   }
   static async refresh(data) {
+    const { genAvatar } = await import('../utils/avatarGenerator.mjs');
     if (!data?.jwt) throw createError.Unauthorized("No refresh token provided");
     const token = await prisma.RefreshToken.findUnique({
       where: {
