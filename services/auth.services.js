@@ -20,6 +20,7 @@ class AuthService {
   static async login(data) {
     const { email, password } = data;
     if (!email || !password) throw createError.BadRequest({ message: "Email or Password not provided", data: data });
+    console.log(data);
     const user = await prisma.user.findUnique({
       where: {
         email
