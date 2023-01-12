@@ -24,9 +24,6 @@ class AuthService {
     const user = await prisma.user.findUnique({
       where: {
         email
-      },
-      include: {
-        icon: true
       }
     });
     if (!user) throw createError.NotFound({ message: "No user exists with that email", data: data });
