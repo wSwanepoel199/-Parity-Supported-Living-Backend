@@ -33,11 +33,6 @@ class RefreshTokenService {
       },
       include: {
         user: true,
-        user: {
-          include: {
-            icon: true
-          }
-        }
       }
     });
     if (!token) throw createError.Unauthorized("No user with that provided token");

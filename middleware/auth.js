@@ -13,7 +13,8 @@ class Auth {
       req.user = user.payload;
       next();
     }).catch(err => {
-      res.status(err.statusCode).json(createError.Unauthorized(err.message));
+      console.log(err);
+      res.status(err.statusCode).json(createError.Unauthorized(err.statusCode, err.message));
       next(createError.Unauthorized(err.message));
     });
   };
@@ -23,7 +24,10 @@ class Auth {
         userId: req.user
       }
     });
-    if (!foundUser || foundUser.role !== "Admin") return next(createError.Forbidden({ message: "Forbidden from accessing this Route" }));
+    if (!foundUser || foundUser.role !== "Admin") {
+      res.status(403).json(createError.Forbidden(403, err.message));
+      next(createError.Forbidden({ message: "Forbidden from accessing this Route" }));
+    }
     next();
   };
 }
