@@ -1,3 +1,4 @@
+const { Prisma } = require('@prisma/client');
 const prisma = require('../lib/prisma');
 const bcrypt = require('bcryptjs');
 const createError = require('http-errors');
@@ -11,10 +12,40 @@ class AuthService {
   static async register(data) {
     data.password = bcrypt.hashSync(data.password, 8);
     delete data.showPassword;
-    const user = await prisma.user.create({
-      data
-    });
-    return user;
+    try {
+      const user = await prisma.user.create({
+        data
+      });
+      return user;
+    } catch (err) {
+      switch (err.constructor.name) {
+        case "PrismaClientKnownRequestError": {
+          console.log(err.code);
+          console.log(err.meta);
+          console.log(err.message);
+          throw createError.Conflict({ message: `${err.constructor.name}. The provided '${err.meta.target}' is not unique` });
+        }
+        case "PrismaClientUnknownRequestError": {
+          throw createError.BadRequest({ message: "Bad Request" });
+        }
+        case "PrismaClientRustPanicError": {
+
+        }
+        case "PrismaClientInitializationError": {
+
+        }
+        case "PrismaClientValidationError": {
+          console.log(err.message);
+          throw createError.NotAcceptable({ message: `${err.constructor.name}. Could not validate create request` });
+        }
+        default: {
+          console.log(err);
+          throw createError.BadRequest({ message: "Failed to create new User" });
+        }
+      }
+    }
+
+    return;
   }
   // logs in existing user
   static async login(data) {

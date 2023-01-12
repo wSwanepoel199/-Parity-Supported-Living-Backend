@@ -7,7 +7,7 @@ class IconService {
     const { createAvatar } = await import('@dicebear/core');
     const avatar = await createAvatar(identicon, {
       seed: userId
-    }).toDataUri();
+    });
 
     const icon = await prisma.icon.create({
       data: {

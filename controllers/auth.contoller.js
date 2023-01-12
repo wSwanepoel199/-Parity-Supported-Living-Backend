@@ -6,6 +6,7 @@ class AuthController {
   static register = async (req, res, next) => {
     try {
       const user = await auth.register(req.body);
+      await icon.genIcon(user.id, user.userId);
       res.status(201).json({
         status: 201,
         data: {
@@ -22,6 +23,7 @@ class AuthController {
     try {
       const data = await auth.login(req.body);
       console.log(process.env.NODE_ENV === "production");
+      const avatar = await icon.fetchIcon(data.user.id);
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
           httpOnly: true,
@@ -43,7 +45,10 @@ class AuthController {
         status: 200,
         data: {
           message: "Logged In Successfully",
-          data: data.user
+          data: {
+            ...data.user,
+            icon: avatar.icon
+          }
         }
       });
     }
