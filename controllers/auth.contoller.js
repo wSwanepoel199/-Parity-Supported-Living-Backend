@@ -6,7 +6,6 @@ class AuthController {
   static register = async (req, res, next) => {
     try {
       const user = await auth.register(req.body);
-      await icon.genIcon(user.id, user.userId);
       res.status(201).json({
         status: 201,
         data: {
