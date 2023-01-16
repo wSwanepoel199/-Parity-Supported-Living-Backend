@@ -14,7 +14,6 @@ class PostController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -29,7 +28,6 @@ class PostController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -44,7 +42,6 @@ class PostController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -60,7 +57,6 @@ class PostController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json({ status: err.statusCode, msg: err.message });
       next(createError(err.statusCode, err.message));
     }
   };

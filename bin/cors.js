@@ -2,10 +2,9 @@ const createError = require("http-errors");
 
 const whitelist = ["http://192.168.56.101:3000", "http://192.168.56.101:33937", "https://paritysl.herokuapp.com", "https://paritysl-pip-dev-tutusnje8ftni.herokuapp.com"];
 
-const cors = {
+const corsOptions = {
   origin: (origin, callback) => {
     console.log("Origin:", origin);
-    console.log("classback", callback);
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
     } else {
@@ -18,4 +17,4 @@ const cors = {
   optionsSuccessStatus: 200,
 };
 
-module.exports = cors;
+module.exports = corsOptions;

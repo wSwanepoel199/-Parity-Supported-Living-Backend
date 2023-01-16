@@ -15,7 +15,6 @@ class AuthController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -23,7 +22,7 @@ class AuthController {
     try {
       const data = await auth.login(req.body);
       console.log(process.env.NODE_ENV === "production");
-      const avatar = await icon.fetchIcon(data.user.id);
+      // const avatar = await icon.fetchIcon(data.user.id);
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
           httpOnly: true,
@@ -47,13 +46,12 @@ class AuthController {
           message: "Logged In Successfully",
           data: {
             ...data.user,
-            icon: avatar.icon
+            // icon: avatar.icon
           }
         }
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -68,7 +66,6 @@ class AuthController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -94,7 +91,6 @@ class AuthController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -109,7 +105,6 @@ class AuthController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
@@ -125,7 +120,6 @@ class AuthController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };

@@ -14,7 +14,6 @@ class RefreshTokenController {
       });
     }
     catch (err) {
-      res.status(err.statusCode).json(createError(err.statusCode, err.message));
       next(createError(err.statusCode, err.message));
     }
   };
