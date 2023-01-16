@@ -19,12 +19,13 @@ class IconService {
     return icon;
   }
   static async fetchIcon(userid) {
-    const icon = await prisma.icon.findFirst({
+    let icon = await prisma.icon.findFirst({
       where: {
         userId: userid
       }
     });
-    if (!icon) throw createError.NotFound("No Icon");
+    // if (!icon) throw createError.NotFound("No Icon");
+    if (!icon) icon = "No Icon";
     return icon;
   }
 }
