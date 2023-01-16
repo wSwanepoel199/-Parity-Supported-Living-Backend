@@ -24,7 +24,8 @@ class IconService {
         userId: userid
       }
     });
-    if (!icon) throw createError.NotFound("No Icon");
+    // if (!icon) throw createError.NotFound("No Icon");
+    if (!icon) icon.icon = "No Icon";
     return icon;
   }
 }

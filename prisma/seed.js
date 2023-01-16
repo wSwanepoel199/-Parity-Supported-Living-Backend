@@ -99,12 +99,12 @@ async function seed() {
     role: "Admin"
   };
   const user = await userService.register(admin);
-  await iconService.genIcon(user.id, user.userId);
+  // await iconService.genIcon(user.id, user.userId);
   console.log(`Created ${user.name} with id ${user.userId}`);
   if (process.env.ENV === "development") {
     for (const u of users) {
       const user = await userService.register(u);
-      await iconService.genIcon(user.id, user.userId);
+      // await iconService.genIcon(user.id, user.userId);
       console.log(`Created user with id: ${user.id}`);
     }
     for (const p of posts) {

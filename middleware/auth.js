@@ -24,7 +24,7 @@ class Auth {
         userId: req.user
       }
     });
-    if (!foundUser || foundUser.role !== "Admin") {
+    if (!foundUser || !["Admin", "Coordinator"].includes(foundUser.role)) {
       res.status(403).json(createError.Forbidden(403, err.message));
       next(createError.Forbidden({ message: "Forbidden from accessing this Route" }));
     }

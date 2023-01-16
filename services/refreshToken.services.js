@@ -4,18 +4,18 @@ const jwt = require('../utils/jwt');
 
 class RefreshTokenService {
   static async create(userid, email) {
-    const tokenCheck = await prisma.RefreshToken.findUnique({
-      where: {
-        userId: userid
-      }
-    });
-    if (tokenCheck) {
-      await prisma.RefreshToken.delete({
-        where: {
-          userId: userid
-        }
-      });
-    }
+    // const tokenCheck = await prisma.RefreshToken.findUnique({
+    //   where: {
+    //     userId: userid
+    //   }
+    // });
+    // if (tokenCheck) {
+    //   await prisma.RefreshToken.delete({
+    //     where: {
+    //       userId: userid
+    //     }
+    //   });
+    // }
     const refreshToken = await jwt.signRefreshToken(email);
     const token = await prisma.RefreshToken.create({
       data: {
@@ -27,7 +27,7 @@ class RefreshTokenService {
   }
   static async refresh(data) {
     if (!data?.jwt) throw createError.Unauthorized("No refresh token provided");
-    const token = await prisma.RefreshToken.findUnique({
+    const token = await prisma.RefreshToken.findFirst({
       where: {
         token: data.jwt
       },
@@ -40,7 +40,7 @@ class RefreshTokenService {
     return token.user;
   }
   static async remove(refreshToken) {
-    const checkToken = await prisma.RefreshToken.findUnique({
+    const checkToken = await prisma.RefreshToken.findFirst({
       where: {
         token: refreshToken
       }

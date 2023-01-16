@@ -1,9 +1,11 @@
+const { Prisma } = require('@prisma/client');
 const prisma = require('../lib/prisma');
 const bcrypt = require('bcryptjs');
 const createError = require('http-errors');
 const jwt = require('../utils/jwt');
 const exclude = require('../utils/exlude');
 const RefreshTokenService = require('./refreshToken.services');
+const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 
 class AuthService {
@@ -11,10 +13,16 @@ class AuthService {
   static async register(data) {
     data.password = bcrypt.hashSync(data.password, 8);
     delete data.showPassword;
-    const user = await prisma.user.create({
-      data
-    });
-    return user;
+    try {
+      const user = await prisma.user.create({
+        data
+      });
+      return user;
+    } catch (err) {
+      handlePrismaErrors(err);
+    }
+
+    return;
   }
   // logs in existing user
   static async login(data) {
@@ -28,7 +36,7 @@ class AuthService {
     });
     if (!user) throw createError.NotFound({ message: "No user exists with that email", data: data });
     const checkPassword = bcrypt.compareSync(password, user.password);
-    if (!checkPassword) throw createError.Unauthorized({ message: "Provided Email or Password is not correct", data: data });
+    if (!checkPassword) throw createError.NotAcceptable({ message: "Provided Email or Password is not correct", data: data });
     delete user.password;
     const refreshToken = await RefreshTokenService.create(user.id, email);
     user.accessToken = await jwt.signAccessToken(user.userId);
@@ -46,7 +54,7 @@ class AuthService {
       },
       data
     });
-    if (!updatedUser) throw createError.NotFound("No User with that id");
+    if (!updatedUser) throw createError.NotFound("Could not find user to update");
     return;
   }
   // logs out existing user
