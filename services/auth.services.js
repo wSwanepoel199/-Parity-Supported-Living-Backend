@@ -5,6 +5,7 @@ const createError = require('http-errors');
 const jwt = require('../utils/jwt');
 const exclude = require('../utils/exlude');
 const RefreshTokenService = require('./refreshToken.services');
+const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 
 class AuthService {
@@ -18,31 +19,7 @@ class AuthService {
       });
       return user;
     } catch (err) {
-      switch (err.constructor.name) {
-        case "PrismaClientKnownRequestError": {
-          console.log(err.code);
-          console.log(err.meta);
-          console.log(err.message);
-          throw createError.Conflict({ message: `${err.constructor.name}. The provided '${err.meta.target}' is not unique` });
-        }
-        case "PrismaClientUnknownRequestError": {
-          throw createError.BadRequest({ message: "Bad Request" });
-        }
-        case "PrismaClientRustPanicError": {
-
-        }
-        case "PrismaClientInitializationError": {
-
-        }
-        case "PrismaClientValidationError": {
-          console.log(err.message);
-          throw createError.NotAcceptable({ message: `${err.constructor.name}. Could not validate create request` });
-        }
-        default: {
-          console.log(err);
-          throw createError.BadRequest({ message: "Failed to create new User" });
-        }
-      }
+      handlePrismaErrors(err);
     }
 
     return;
@@ -59,7 +36,7 @@ class AuthService {
     });
     if (!user) throw createError.NotFound({ message: "No user exists with that email", data: data });
     const checkPassword = bcrypt.compareSync(password, user.password);
-    if (!checkPassword) throw createError.Unauthorized({ message: "Provided Email or Password is not correct", data: data });
+    if (!checkPassword) throw createError.NotAcceptable({ message: "Provided Email or Password is not correct", data: data });
     delete user.password;
     const refreshToken = await RefreshTokenService.create(user.id, email);
     user.accessToken = await jwt.signAccessToken(user.userId);
@@ -77,7 +54,7 @@ class AuthService {
       },
       data
     });
-    if (!updatedUser) throw createError.NotFound("No User with that id");
+    if (!updatedUser) throw createError.NotFound("Could not find user to update");
     return;
   }
   // logs out existing user

@@ -22,7 +22,7 @@ class AuthController {
     try {
       const data = await auth.login(req.body);
       console.log(process.env.NODE_ENV === "production");
-      const avatar = await icon.fetchIcon(data.user.id);
+      // const avatar = await icon.fetchIcon(data.user.id);
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
           httpOnly: true,
@@ -46,7 +46,7 @@ class AuthController {
           message: "Logged In Successfully",
           data: {
             ...data.user,
-            icon: avatar.icon
+            // icon: avatar.icon
           }
         }
       });

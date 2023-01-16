@@ -5,14 +5,14 @@ class RefreshTokenController {
   static refreshToken = async (req, res, next) => {
     try {
       const refreshedUser = await refreshToken.refresh(req.cookies);
-      const avatar = await icon.fetchIcon(refreshedUser.id);
+      // const avatar = await icon.fetchIcon(refreshedUser.id);
       res.status(200).json({
         status: 200,
         data: {
           message: "User refreshed",
           data: {
             ...refreshedUser,
-            icon: avatar.icon
+            // icon: avatar.icon
           }
         }
       });
