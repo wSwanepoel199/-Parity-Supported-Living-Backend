@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon ./bin/www",
     "start": "NODE_ENV=production node ./bin/www",
-    "studio": "npx prisma studio"
+    "studio": "npx prisma studio",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@dicebear/collection": "^5.0.2",
