@@ -1,6 +1,6 @@
 const createError = require("http-errors");
 
-const whitelist = ["http://192.168.56.101:3000", "http://192.168.56.101:33937", "https://paritysl.herokuapp.com", "https://paritysl-pip-dev-tutusnje8ftni.herokuapp.com"];
+const whitelist = ["http://192.168.56.101:3000", "http://192.168.56.101:33937", "https://paritysl.herokuapp.com", "https://paritysl-dev.herokuapp.com"];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -11,9 +11,9 @@ const corsOptions = {
       callback(createError.Unauthorized("Blocked By Cors"));
     }
   },
-  methods: ['GET', 'POST', 'PUT'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH'],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', "Content-Length", 'Authorization'],
   optionsSuccessStatus: 200,
 };
 

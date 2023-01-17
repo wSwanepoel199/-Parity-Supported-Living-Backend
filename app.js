@@ -10,6 +10,7 @@ const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const refreshRouter = require('./routes/refesh');
 const postRouter = require('./routes/posts');
+const fileRouter = require('./routes/file');
 
 const corsOptions = require('./bin/cors');
 
@@ -33,6 +34,7 @@ app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/refresh', refreshRouter);
 app.use('/posts', postRouter);
+app.use('/files', fileRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
