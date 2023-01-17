@@ -14,6 +14,7 @@ class RefreshTokenService {
     }
     const refreshToken = await jwt.signRefreshToken(email);
     const expireDate = new Date(Date.now() + (1000 * 60 * 60 * 24 * 200));
+    console.log(expireDate);
     const token = await prisma.RefreshToken.create({
       data: {
         userId: userid,
