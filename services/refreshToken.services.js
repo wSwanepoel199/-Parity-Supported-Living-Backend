@@ -18,7 +18,7 @@ class RefreshTokenService {
       data: {
         userId: userid,
         token: refreshToken,
-        expiresAt: expireDate
+        expiresAt: expireDate,
       }
     });
     return token.token;
