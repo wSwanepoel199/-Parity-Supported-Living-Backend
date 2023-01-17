@@ -1,4 +1,5 @@
 const refreshToken = require('../services/refreshToken.services');
+const icon = require('../services/icon.service');
 const createError = require('http-errors');
 
 class RefreshTokenController {
