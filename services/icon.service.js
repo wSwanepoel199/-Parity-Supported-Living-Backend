@@ -3,7 +3,7 @@ const createError = require('http-errors');
 const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class IconService {
-  static async genIcon(userid, userId) {
+  static async genIcon(userId) {
     const { identicon } = await import('@dicebear/collection');
     const { createAvatar } = await import('@dicebear/core');
     const avatar = await createAvatar(identicon, {
@@ -12,7 +12,7 @@ class IconService {
     try {
       const icon = await prisma.icon.create({
         data: {
-          userId: userid,
+          userId: userId,
           icon: avatar
         }
       });
@@ -22,12 +22,12 @@ class IconService {
     }
     return;
   }
-  static async fetchIcon(userid) {
+  static async fetchIcon(userId) {
     let icon;
     try {
       icon = await prisma.icon.findFirst({
         where: {
-          userId: userid
+          userId: userId
         }
       });
       return icon;
@@ -35,6 +35,26 @@ class IconService {
       handlePrismaErrors(err);
     }
     // if (!icon) throw createError.NotFound("No Icon");
+  }
+  static async deleteIcon(userId) {
+    let icon;
+    try {
+      icon = await prisma.icon.findUnique({
+        where: {
+          userId: userId
+        }
+      });
+      if (icon) {
+        await prisma.icon.delete({
+          where: {
+            userId: icon.userId
+          }
+        });
+      }
+      return;
+    } catch (err) {
+      handlePrismaErrors(err);
+    }
   }
 }
 

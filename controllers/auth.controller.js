@@ -6,7 +6,7 @@ class AuthController {
   static register = async (req, res, next) => {
     try {
       const user = await auth.register(req.body);
-      await icon.genIcon(user.id, user.userId);
+      await icon.genIcon(user.userId);
       res.status(201).json({
         status: 201,
         data: {
@@ -21,8 +21,7 @@ class AuthController {
   static login = async (req, res, next) => {
     try {
       const data = await auth.login(req.body);
-      console.log(process.env.NODE_ENV === "production");
-      const avatar = await icon.fetchIcon(data.user.id);
+      const avatar = await icon.fetchIcon(data.user.userId);
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
           httpOnly: true,
@@ -43,7 +42,7 @@ class AuthController {
         status: 200,
         data: {
           message: "Logged In Successfully",
-          data: {
+          user: {
             ...data.user,
             icon: avatar || 'No Icon'
           }
@@ -54,13 +53,28 @@ class AuthController {
       next(createError(err.statusCode, err.message));
     }
   };
+  static newUserLogin = async (req, res, next) => {
+    try {
+      await auth.passReset(req.body);
+      res.status(200).json({
+        status: 200,
+        data: {
+          message: 'User successfully updated'
+        }
+      });
+    }
+    catch (err) {
+      console.log(err);
+      next(createError(err.statusCode, err.message));
+    }
+  };
   static update = async (req, res, next) => {
     try {
       await auth.update(req.body);
       res.status(200).json({
         status: 200,
         data: {
-          messsage: 'User successfully updated'
+          message: 'User successfully updated'
         }
       });
     }

@@ -3,21 +3,13 @@ const createError = require('http-errors');
 const jwt = require('../utils/jwt');
 
 class RefreshTokenService {
-  static async create(userid, email) {
-    const tokenCheck = await prisma.RefreshToken.findMany({
-      where: {
-        userId: userid
-      }
-    });
-    if (tokenCheck) {
-      this.clear(tokenCheck);
-    }
+  static async create(userId, email) {
     const refreshToken = await jwt.signRefreshToken(email);
     const expireDate = new Date(Date.now() + (1000 * 60 * 60 * 24 * 200));
     console.log(expireDate);
     const token = await prisma.RefreshToken.create({
       data: {
-        userId: userid,
+        userId: userId,
         token: refreshToken,
         expiresAt: expireDate,
       }
@@ -42,6 +34,7 @@ class RefreshTokenService {
     });
     if (!token) throw createError.Unauthorized("No credentials exist");
     token.user.accessToken = await jwt.verifyRefreshToken(data.jwt, token.user);
+    token.user.name = `${token.user.firstName} ${token.user.lastName !== null ? token.user.lastName : ''}`; // generates a name value for front end compatibility
     return token.user;
   }
   static async remove(refreshToken) {

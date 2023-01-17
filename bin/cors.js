@@ -11,9 +11,9 @@ const corsOptions = {
       callback(createError.Unauthorized("Blocked By Cors"));
     }
   },
-  methods: ['GET', 'POST', 'PUT'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH'],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', "Content-Length", 'Authorization'],
   optionsSuccessStatus: 200,
 };
 

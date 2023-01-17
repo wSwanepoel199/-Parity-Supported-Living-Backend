@@ -96,7 +96,8 @@ async function seed() {
     email: "Admin@paritysl.com",
     password: "admin",
     name: "ParityAdmin",
-    role: "Admin"
+    role: "Admin",
+    resetPassword: false,
   };
   // const user = await userService.register(admin);
   admin.email = admin.email.toLowerCase();
@@ -106,30 +107,26 @@ async function seed() {
     }
   });
   if (user) {
-    console.log(`user ${user.name} exists`);
+    console.log(`${user.firstName} exists`);
   } else {
-    user = await prisma.user.create({
-      data: admin
-    });
-    await iconService.genIcon(user.id, user.userId);
-    console.log(`Created ${user.name} with id ${user.userId}`);
+    user = await userService.register(admin);
+    await iconService.genIcon(user.userId);
+    console.log(`Created ${user.firstName} with id ${user.userId}`);
   }
   if (process.env.ENV === "development") {
     for (const u of users) {
       u.email = u.email.toLowerCase();
       let user = await prisma.user.findUnique({
         where: {
-          email: u.email.toLowerCase()
+          email: u.email
         }
       });
       if (user) {
-        console.log(`user ${user.userId} already exists`);
+        console.log(`user ${user.firstName} already exists`);
       } else {
-        user = await prisma.user.create({
-          data: u
-        });
-        await iconService.genIcon(user.id, user.userId);
-        console.log(`Created user with id: ${user.id}`);
+        user = await userService.register(u);
+        await iconService.genIcon(user.userId);
+        console.log(`Created ${user.firstName} with id: ${user.id}`);
       }
       // const user = await userService.register(u);
     }
@@ -149,12 +146,13 @@ async function seed() {
         }
       });
       if (worker) {
-        console.log(`worker ${worker.name} already exists`);
+        console.log(`worker ${worker.firstName} already exists`);
       } else {
         worker = await prisma.user.create({
           data: u
         });
-        console.log(`Created worker ${worker.name}`);
+        await iconService.genIcon(worker.userId);
+        console.log(`Created worker ${worker.firstName}`);
       }
     }
   }
