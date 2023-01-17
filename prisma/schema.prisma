@@ -43,6 +43,9 @@ model RefreshToken {
   userId Int
   user User @relation("Token", fields: [userId], references: [id])
   token String @unique
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Icon {
@@ -50,6 +53,8 @@ model Icon {
   userId Int @unique
   user User @relation("Icon", fields:[userId], references: [id])
   icon String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role{

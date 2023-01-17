@@ -13,6 +13,7 @@ class AuthService {
   static async register(data) {
     data.password = bcrypt.hashSync(data.password, 8);
     delete data.showPassword;
+    data.email = data.email.toLowerCase();
     try {
       const user = await prisma.user.create({
         data
@@ -21,26 +22,32 @@ class AuthService {
     } catch (err) {
       handlePrismaErrors(err);
     }
-
     return;
   }
   // logs in existing user
   static async login(data) {
     const { email, password } = data;
     if (!email || !password) throw createError.BadRequest({ message: "Email or Password not provided", data: data });
-    console.log(data);
-    const user = await prisma.user.findUnique({
-      where: {
-        email
-      }
-    });
-    if (!user) throw createError.NotFound({ message: "No user exists with that email", data: data });
-    const checkPassword = bcrypt.compareSync(password, user.password);
-    if (!checkPassword) throw createError.NotAcceptable({ message: "Provided Email or Password is not correct", data: data });
-    delete user.password;
-    const refreshToken = await RefreshTokenService.create(user.id, email);
-    user.accessToken = await jwt.signAccessToken(user.userId);
-    return { user: user, token: refreshToken };
+    let user;
+    let checkPassword;
+    try {
+      user = await prisma.user.findUnique({
+        where: {
+          email: email.toLowerCase()
+        }
+      });
+      checkPassword = bcrypt.compareSync(password, user.password);
+      delete user.password;
+      const refreshToken = await RefreshTokenService.create(user.id, email);
+      user.accessToken = await jwt.signAccessToken(user.userId);
+      return { user: user, token: refreshToken };
+    } catch (err) {
+      console.log(err);
+      if (!user) throw createError.NotFound({ message: "No user exists with that email", data: data });
+      if (!checkPassword) throw createError.Forbidden({ message: "Provided Email or Password is not correct", data: data });
+      handlePrismaErrors(err);
+    }
+    return;
   }
   // updates existing user
   static async update(data) {
@@ -48,18 +55,25 @@ class AuthService {
       delete data[key];
     }
     if (data.password) data.password = bcrypt.hashSync(data.password, 8);
-    const updatedUser = await prisma.user.update({
-      where: {
-        userId: data.userId
-      },
-      data
-    });
-    if (!updatedUser) throw createError.NotFound("Could not find user to update");
+    let updatedUser;
+    try {
+      updatedUser = await prisma.user.update({
+        where: {
+          userId: data.userId
+        },
+        data
+      });
+    } catch (err) {
+      if (!updatedUser) throw createError.NotFound("Could not find user to update");
+    }
     return;
   }
   // logs out existing user
   static async logout(data) {
-    if (!data?.jwt) return;
+    if (!data?.jwt) {
+      await RefreshTokenService.clear();
+      return;
+    }
     await RefreshTokenService.remove(data.jwt);
     return;
   }

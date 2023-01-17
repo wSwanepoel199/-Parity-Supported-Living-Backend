@@ -1,5 +1,6 @@
 const prisma = require('../lib/prisma');
 const createError = require('http-errors');
+const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class IconService {
   static async genIcon(userid, userId) {
@@ -8,25 +9,32 @@ class IconService {
     const avatar = await createAvatar(identicon, {
       seed: userId
     }).toDataUri();
-
-    const icon = await prisma.icon.create({
-      data: {
-        userId: userid,
-        icon: avatar
-      }
-    });
-
-    return icon;
+    try {
+      const icon = await prisma.icon.create({
+        data: {
+          userId: userid,
+          icon: avatar
+        }
+      });
+      return icon;
+    } catch (err) {
+      handlePrismaErrors(err);
+    }
+    return;
   }
   static async fetchIcon(userid) {
-    const icon = await prisma.icon.findFirst({
-      where: {
-        userId: userid
-      }
-    });
+    let icon;
+    try {
+      icon = await prisma.icon.findFirst({
+        where: {
+          userId: userid
+        }
+      });
+      return icon;
+    } catch (err) {
+      handlePrismaErrors(err);
+    }
     // if (!icon) throw createError.NotFound("No Icon");
-    if (!icon) icon.icon = "No Icon";
-    return icon;
   }
 }
 

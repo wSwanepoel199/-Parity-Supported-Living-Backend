@@ -93,25 +93,69 @@ async function seed() {
   console.log("Seeding....");
   console.log(process.env.ENV);
   const admin = {
-    email: "admin@paritysl.com",
+    email: "Admin@paritysl.com",
     password: "admin",
     name: "ParityAdmin",
     role: "Admin"
   };
-  const user = await userService.register(admin);
-  // await iconService.genIcon(user.id, user.userId);
-  console.log(`Created ${user.name} with id ${user.userId}`);
+  // const user = await userService.register(admin);
+  admin.email = admin.email.toLowerCase();
+  let user = await prisma.user.findUnique({
+    where: {
+      email: admin.email
+    }
+  });
+  if (user) {
+    console.log(`user ${user.name} exists`);
+  } else {
+    user = await prisma.user.create({
+      data: admin
+    });
+    await iconService.genIcon(user.id, user.userId);
+    console.log(`Created ${user.name} with id ${user.userId}`);
+  }
   if (process.env.ENV === "development") {
     for (const u of users) {
-      const user = await userService.register(u);
-      // await iconService.genIcon(user.id, user.userId);
-      console.log(`Created user with id: ${user.id}`);
+      u.email = u.email.toLowerCase();
+      let user = await prisma.user.findUnique({
+        where: {
+          email: u.email.toLowerCase()
+        }
+      });
+      if (user) {
+        console.log(`user ${user.userId} already exists`);
+      } else {
+        user = await prisma.user.create({
+          data: u
+        });
+        await iconService.genIcon(user.id, user.userId);
+        console.log(`Created user with id: ${user.id}`);
+      }
+      // const user = await userService.register(u);
     }
     for (const p of posts) {
       const post = await prisma.post.create({
         data: p
       });
       console.log(`Created post withg id: ${post.id}`);
+    }
+  }
+  if (process.env.ENV === "PSLSeed") {
+    for (const u of pslWorker) {
+      u.email = u.email.toLowerCase();
+      let worker = await prisma.user.findUnique({
+        where: {
+          email: u.email
+        }
+      });
+      if (worker) {
+        console.log(`worker ${worker.name} already exists`);
+      } else {
+        worker = await prisma.user.create({
+          data: u
+        });
+        console.log(`Created worker ${worker.name}`);
+      }
     }
   }
   console.log("Done Seeding");

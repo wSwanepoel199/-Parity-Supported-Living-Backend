@@ -22,22 +22,21 @@ class AuthController {
     try {
       const data = await auth.login(req.body);
       console.log(process.env.NODE_ENV === "production");
-      // const avatar = await icon.fetchIcon(data.user.id);
+      const avatar = await icon.fetchIcon(data.user.id);
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
           httpOnly: true,
           sameSite: "None",
           secure: true,
-          // maxAge: (24 * 60 * 60 * 1000 * 200)
-          maxAge: (1000 * 60 * 60 * 24)
+          maxAge: (1000 * 60 * 60 * 24 * 200)
         });
       } else {
         res.cookie('jwt', data.token, {
           httpOnly: true,
           // sameSite: "None",
           // secure: true,
-          // maxAge: (24 * 60 * 60 * 1000 * 200)
-          maxAge: (1000 * 60 * 60 * 24)
+          maxAge: (1000 * 60 * 60 * 24 * 200)
+          // maxAge: (1000 * 60 * 5)
         });
       }
       res.status(200).json({
@@ -46,7 +45,7 @@ class AuthController {
           message: "Logged In Successfully",
           data: {
             ...data.user,
-            // icon: avatar.icon
+            icon: avatar || 'No Icon'
           }
         }
       });
