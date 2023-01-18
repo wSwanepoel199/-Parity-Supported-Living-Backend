@@ -8,24 +8,30 @@ const iconService = require('./icon.service');
 
 
 class FileService {
-  static async upload(file) {
+  static async upload(file, { type }) {
     try {
-      for (const user of file) {
-        if (!user) {
-          continue;
-        }
-        const checkUser = await prisma.user.findUnique({
-          where: {
-            email: user.email
+      if (type === "user") {
+        for (const user of file) {
+          if (!user) {
+            continue;
           }
-        });
-        if (checkUser) {
-          console.log(`${user.firstName} already exists`);
-        } else {
-          const newUser = await userService.register(user);
-          await iconService.genIcon(newUser.userId);
-          console.log(`Created ${newUser.firstName} with id ${newUser.userId}`);
+          const checkUser = await prisma.user.findUnique({
+            where: {
+              email: user.email
+            }
+          });
+          if (checkUser) {
+            console.log(`${user.firstName} already exists`);
+          } else {
+            const newUser = await userService.register(user);
+            await iconService.genIcon(newUser.userId);
+            console.log(`Created ${newUser.firstName} with id ${newUser.userId}`);
+          }
         }
+      } else if (type === "post") {
+        console.log("new posts");
+      } else {
+        throw createError.UnprocessableEntity("Could not process uploaded file");
       }
       return;
     } catch (err) {
