@@ -5,10 +5,12 @@ const createError = require('http-errors');
 class FileController {
   static upload = async (req, res, next) => {
     try {
-      await file.upload(req.body);
+      // console.log(req);
+      await file.upload(req.body, req.query);
       res.status(201).json({
         status: 201,
-        message: "successfully uploaded any new users"
+        message: `Successfully added new ${req.query.type} entries`,
+        type: req.query.type
       });
     } catch (err) {
       next(createError(err.statusCode, err.message));

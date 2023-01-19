@@ -12,15 +12,17 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 class AuthService {
   // register new user
   static async register(data) {
-
-    data.password = bcrypt.hashSync(data.password, 8);   // encrypts recieved password
-    delete data.showPassword;   // deletes unneeded form field
-
     if (data.name) {  // checks if name is present
       data.name = data.name.split(' '); // splits name into array
       data.firstName = data.name[0]; // assigns string at index 0 to first name
       data.lastName = data.name[1]; // assigns string at index 1 to last name
       delete data.name; //deletes the name value
+    }
+
+    if (data.password) {
+      data.password = bcrypt.hashSync(data.password, 8);   // encrypts recieved password
+    } else {
+      data.password = bcrypt.hashSync(`${data.firstName}1234`, 8);
     }
 
     data.email = data.email.toLowerCase(); // converts provided email to lower case cause case insensitivity does not appear to be working
@@ -73,12 +75,10 @@ class AuthService {
     for (let key of ["showPassword", "createdAt", "updatedAt"]) {
       delete data[key];
     }
-    if (data.password !== '') { //checks if password is provided
-      data.password = bcrypt.hashSync(data.password, 8); // encrypts it to replace existing password
-      data.resetPassword = true; // sets resetPassword to true incase it has not been provided
-    } else {
-      delete data.password;
+    if (data.resetPassword) { //checks if password is provided
+      data.password = bcrypt.hashSync(`${data.firstName}1234`, 8); // encrypts it to replace existing password
     }
+
     // checks if name is present, splits it into array and assigns index 0 and 1 to firstName and lastName, then deletes name
     if (data.name) {
       data.name = data.name.split(' ');

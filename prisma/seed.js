@@ -43,7 +43,6 @@ const users = [
 // Notes String?
 const posts = [
   {
-    carerId: 2,
     client: "Mood scarce",
     hours: 4,
     date: new Date(new Date() - Math.random() * (1e+12)),
@@ -51,7 +50,6 @@ const posts = [
     notes: "Et rebum rebum diam eirmod dolor lorem rebum sanctus, at erat sed elitr sadipscing diam, sea amet diam vero labore."
   },
   {
-    carerId: 2,
     client: "Mood scarce",
     hours: 6,
     date: new Date(new Date() - Math.random() * (1e+12)),
@@ -59,7 +57,6 @@ const posts = [
     notes: "Dolor voluptua rebum dolores ut ipsum ipsum sadipscing, magna lorem et dolor dolore labore eos amet eos eos, erat gubergren."
   },
   {
-    carerId: 3,
     client: "Then would",
     hours: 3,
     date: new Date(new Date() - Math.random() * (1e+12)),
@@ -67,7 +64,6 @@ const posts = [
     notes: "Dolor diam no at sit et sea est ea, duo diam no takimata ea ea et sed. Eos sadipscing accusam."
   },
   {
-    carerId: 4,
     client: "Dwell sadness",
     hours: 20,
     date: new Date(new Date() - Math.random() * (1e+12)),
@@ -75,7 +71,6 @@ const posts = [
     notes: "Dolor amet rebum sed et ipsum at accusam invidunt. Voluptua eirmod clita magna stet, dolore takimata sadipscing magna invidunt et. Amet voluptua diam lorem stet gubergren, est dolore takimata accusam dolore lorem dolor eos lorem duo. Dolores tempor kasd lorem."
   },
   {
-    carerId: 2,
     client: "Mood scarce",
     hours: 1,
     date: new Date(new Date() - Math.random() * (1e+12)),
@@ -83,7 +78,6 @@ const posts = [
     notes: "To spoiled he mothernot ungodly deem change a ere into.."
   },
   {
-    carerId: 1,
     date: new Date(new Date() - Math.random() * (1e+12)),
     notes: "Clita tempor justo labore ea eos eirmod et, ipsum sed et amet lorem, sed clita accusam consetetur amet ut amet sit takimata, tempor lorem amet invidunt invidunt takimata invidunt at dolor diam, lorem consetetur sea sanctus sed ipsum invidunt dolor,."
   }
@@ -135,25 +129,6 @@ async function seed() {
         data: p
       });
       console.log(`Created post withg id: ${post.id}`);
-    }
-  }
-  if (process.env.ENV === "PSLSeed") {
-    for (const u of pslWorker) {
-      u.email = u.email.toLowerCase();
-      let worker = await prisma.user.findUnique({
-        where: {
-          email: u.email
-        }
-      });
-      if (worker) {
-        console.log(`worker ${worker.firstName} already exists`);
-      } else {
-        worker = await prisma.user.create({
-          data: u
-        });
-        await iconService.genIcon(worker.userId);
-        console.log(`Created worker ${worker.firstName}`);
-      }
     }
   }
   console.log("Done Seeding");
