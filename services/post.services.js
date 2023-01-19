@@ -75,18 +75,12 @@ class PostService {
     return;
   }
   static async all(user) {
-    let allPosts;
-    try {
-      allPosts = await prisma.post.findMany({
-        include: {
-          carer: true
-        }
-      });
-      return allPosts;
-    } catch (err) {
-      console.log(err);
-      // handlePrismaErrors(err);
-    }
+    const allPosts = await prisma.post.findMany({
+      include: {
+        carer: true
+      }
+    });
+    return allPosts;
   }
 }
 
