@@ -84,7 +84,8 @@ class PostService {
       });
       return allPosts;
     } catch (err) {
-      handlePrismaErrors(err);
+      console.log(err);
+      // handlePrismaErrors(err);
     }
   }
 }
