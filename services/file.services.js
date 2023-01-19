@@ -17,8 +17,15 @@ class FileService {
             continue;
           }
           const parsedUser = Object.fromEntries(
-            Object.entries(user).map(([k, v]) => [k.toLowerCase(), v])
+            Object.entries(user).map(([k, v]) => {
+              if (k === "userId" || k === 'firstName' || k === 'lastName') {
+                return [k, v];
+              } else {
+                return [k.toLowerCase(), v];
+              }
+            })
           );
+          console.log(parsedUser);
           const checkUser = await prisma.user.findUnique({
             where: {
               email: parsedUser.email
@@ -30,6 +37,11 @@ class FileService {
             var newUser = await userService.register(parsedUser);
             await iconService.genIcon(newUser.userId);
             console.log(`Created ${newUser.firstName} with id ${newUser.userId}`);
+          }
+
+          if (!newUser) {
+            console.log("Could not create new notes entry");
+            continue;
           }
         }
       } else if (type === "post") {
@@ -48,16 +60,21 @@ class FileService {
               }
             })
           );
+          delete parsedPost.carer;
           parsedPost.date = new Date(parsedPost.date).toISOString();
-          await postService.create(parsedPost);
+          var newPost = await postService.create(parsedPost);
+          if (!newPost) {
+            console.log("Could not create new notes entry");
+            continue;
+          }
         }
       } else {
         throw createError.UnprocessableEntity("Could not process uploaded file");
       }
       return;
     } catch (err) {
+      console.log('err:', err);
       if (!['user', 'post'].includes(type)) throw createError.UnprocessableEntity("Could not process uploaded file");
-      // if (!newUser || !newPost) throw createError.UnprocessableEntity("Failed to create new entires from uploaded file");
       handlePrismaErrors(err);
       throw createError.UnprocessableEntity("Failed to create new entires from uploaded file");
     }

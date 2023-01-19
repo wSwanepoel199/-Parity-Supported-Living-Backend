@@ -22,17 +22,40 @@ class PostService {
     for (let key of ["carer", "createdAt", "updatedAt"]) {
       delete data[key];
     }
-    let updatedPost;
+    let findPost;
+    let updatePost;
+    let userCheck;
     try {
-      updatedPost = await prisma.post.update({
+      if (data.carerId !== '') {
+        userCheck = await prisma.user.findUnique({
+          where: {
+            userId: data.carerId
+          }
+        });
+      } else {
+        userCheck = true;
+        delete data.carerId;
+      }
+
+      console.log(data);
+      findPost = await prisma.post.findUnique({
+        where: {
+          postId: data.postId
+        }
+      });
+      updatePost = await prisma.post.update({
         where: {
           postId: data.postId
         },
         data
       });
+
+      return updatePost;
     } catch (err) {
-      if (!updatedPost) throw createError.NotFound("No Post with that id");
       handlePrismaErrors(err);
+      if (!userCheck) throw createError.UnprocessableEntity("Invalid carer ID provided");
+      if (!findPost) throw createError.NotFound("No Post with that id");
+      if (!updatePost) throw createError.UnprocessableEntity("Could not update post");
     }
     return;
   }

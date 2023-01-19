@@ -1,6 +1,7 @@
 const prisma = require('../lib/prisma');
 const createError = require('http-errors');
 const jwt = require('../utils/jwt');
+const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class RefreshTokenService {
   static async create(userId, email) {
@@ -24,18 +25,26 @@ class RefreshTokenService {
       }
       throw createError.Forbidden("User credentials expired, please sign back in");
     }
-    const token = await prisma.RefreshToken.findFirst({
-      where: {
-        token: data.jwt
-      },
-      include: {
-        user: true,
-      }
-    });
-    if (!token) throw createError.Unauthorized("No credentials exist");
-    token.user.accessToken = await jwt.verifyRefreshToken(data.jwt, token.user);
-    token.user.name = `${token.user.firstName} ${token.user.lastName !== null ? token.user.lastName : ''}`; // generates a name value for front end compatibility
-    return token.user;
+    let token;
+    try {
+      token = await prisma.RefreshToken.findFirst({
+        where: {
+          token: data.jwt
+        },
+        include: {
+          user: true,
+        }
+      });
+      if (!token) throw createError.Unauthorized("No credentials exist");
+      token.user.accessToken = await jwt.verifyRefreshToken(data.jwt, token.user);
+      token.user.name = `${token.user.firstName} ${token.user.lastName !== null ? token.user.lastName : ''}`; // generates a name value for front end compatibility
+      return token.user;
+    }
+    catch (err) {
+      if (!token) throw createError.Unauthorized("No credentials exist");
+      handlePrismaErrors(err);
+    }
+    return;
   }
   static async remove(refreshToken) {
     const checkToken = await prisma.RefreshToken.findFirst({
