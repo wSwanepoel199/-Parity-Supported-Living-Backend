@@ -80,7 +80,11 @@ class PostService {
         carer: true
       }
     });
-    return allPosts;
+    if (allPosts) {
+      return allPosts;
+    } else {
+      return [];
+    }
   }
 }
 
