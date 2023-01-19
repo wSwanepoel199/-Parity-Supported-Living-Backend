@@ -84,7 +84,6 @@ class PostService {
       });
       return allPosts;
     } catch (err) {
-      if (!allPosts) throw createError.NotFound("Could not find any posts");
       handlePrismaErrors(err);
     }
   }
