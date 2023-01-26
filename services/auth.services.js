@@ -57,7 +57,7 @@ class AuthService {
 
       user.name = `${user.firstName} ${user.lastName !== null ? user.lastName : ''}`; // generates a name value for front end compatibility
 
-      const refreshToken = await RefreshTokenService.create(user.userId, email); // generates a refreshtoken to be used for authentication
+      const refreshToken = await RefreshTokenService.create(user.userId, email.toLowerCase()); // generates a refreshtoken to be used for authentication
       user.accessToken = await jwt.signAccessToken(user.userId); //generates accessToken using jwt to be used for authentication
 
       return { user: user, token: refreshToken }; //returns user and refreshtoken

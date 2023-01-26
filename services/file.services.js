@@ -49,6 +49,7 @@ class FileService {
           if (!post) {
             continue;
           }
+          // TODO: if userId doesn't exist, delete id
           const parsedPost = Object.fromEntries(
             Object.entries(post).map(([k, v]) => {
               if (k === "Distance(KM)") {
