@@ -5,6 +5,7 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 class PostService {
   static async create(data) {
     let newPost;
+    console.log(data);
     try {
       newPost = await prisma.post.create({
         data
@@ -75,12 +76,29 @@ class PostService {
     return;
   }
   static async all(user) {
+    let allPosts;
     try {
-      const allPosts = await prisma.post.findMany({
-        include: {
-          carer: true
+      const loggedinUser = await prisma.user.findUnique({
+        where: {
+          userId: user
         }
       });
+      if (loggedinUser.role !== 'Carer') {
+        allPosts = await prisma.post.findMany({
+          include: {
+            carer: true
+          }
+        });
+      } else {
+        allPosts = await prisma.post.findMany({
+          where: {
+            private: false
+          },
+          include: {
+            carer: true
+          }
+        });
+      }
       if (allPosts) {
         return allPosts;
       } else {

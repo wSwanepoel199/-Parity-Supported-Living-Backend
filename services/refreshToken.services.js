@@ -23,7 +23,7 @@ class RefreshTokenService {
       if (refreshTokens) {
         this.clear(refreshTokens);
       }
-      throw createError.Forbidden("User credentials expired, please sign back in");
+      throw createError.Forbidden({ message: "User credentials expired, please sign back in" });
     }
     let token;
     try {
