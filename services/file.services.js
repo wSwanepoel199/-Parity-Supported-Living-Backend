@@ -62,6 +62,14 @@ class FileService {
             })
           );
           delete parsedPost.carer;
+          if (parsedPost.carerId) {
+            const checkUser = await prisma.user.findUnique({
+              where: {
+                userId: parsedPost.carerId
+              }
+            });
+            if (!checkUser) delete parsedPost.carerId;
+          }
           parsedPost.date = new Date(parsedPost.date).toISOString();
           var newPost = await postService.create(parsedPost);
           if (!newPost) {
