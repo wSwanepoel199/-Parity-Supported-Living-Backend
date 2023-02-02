@@ -12,9 +12,9 @@ class PostService {
       });
       return newPost;
     } catch (err) {
-      if (!newPost) {
-        throw createError.BadRequest("Could not create post");
-      }
+      // if (!newPost) {
+      //   throw createError.BadRequest("Could not create post");
+      // }
       handlePrismaErrors(err);
     }
     return;
