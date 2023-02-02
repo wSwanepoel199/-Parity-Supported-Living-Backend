@@ -5,7 +5,6 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 class PostService {
   static async create(data) {
     let newPost;
-    console.log(data);
     try {
       newPost = await prisma.post.create({
         data
@@ -37,8 +36,6 @@ class PostService {
         userCheck = true;
         delete data.carerId;
       }
-
-      console.log(data);
       findPost = await prisma.post.findUnique({
         where: {
           postId: data.postId
