@@ -7,7 +7,7 @@ const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 // { expiresIn: '1 days' }
 const signAccessToken = (payload) => {
   return new Promise((resolve, reject) => {
-    jwt.sign({ payload }, accessTokenSecret, { expiresIn: '1 days' }, (err, token) => {
+    jwt.sign({ payload }, accessTokenSecret, { expiresIn: '30 minutes' }, (err, token) => {
       if (err) reject(createError.InternalServerError());
       resolve(token);
     });

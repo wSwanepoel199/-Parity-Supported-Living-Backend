@@ -59,7 +59,7 @@ class AuthService {
 
       const refreshToken = await RefreshTokenService.create(user.userId, email.toLowerCase()); // generates a refreshtoken to be used for authentication
       user.accessToken = await jwt.signAccessToken(user.userId); //generates accessToken using jwt to be used for authentication
-
+      user.expireTimer = 1000 * 60 * 30;
       return { user: user, token: refreshToken }; //returns user and refreshtoken
     } catch (err) {
       console.log(err); //logs error for troubleshooting

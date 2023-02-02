@@ -37,6 +37,7 @@ class RefreshTokenService {
       });
       if (!token) throw createError.Unauthorized("No credentials exist");
       token.user.accessToken = await jwt.verifyRefreshToken(data.jwt, token.user);
+      token.user.expireTimer = 1000 * 60 * 30;
       token.user.name = `${token.user.firstName} ${token.user.lastName !== null ? token.user.lastName : ''}`; // generates a name value for front end compatibility
       return token.user;
     }
@@ -64,12 +65,14 @@ class RefreshTokenService {
   static async clear(refreshTokens) {
     for (const token of refreshTokens) {
       if (!token.expiresAt) {
+        console.log('clearing token ', token.id);
         await prisma.RefreshToken.delete({
           where: {
             token: token.token
           }
         });
       } else if (Date.now() > Date.parse(token.expiresAt)) {
+        console.log('clearing token ', token.id);
         await prisma.RefreshToken.delete({
           where: {
             token: token.token
