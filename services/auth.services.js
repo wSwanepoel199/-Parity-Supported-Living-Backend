@@ -126,7 +126,7 @@ class AuthService {
           password: password
         }
       });
-      return;
+      return user;
     } catch (err) {
       console.log(err);
       if (!user) throw createError.NotFound("Could not update password as user does not exist"); //if user can not be found, throws error

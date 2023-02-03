@@ -89,7 +89,7 @@ class PostService {
       } else {
         allPosts = await prisma.post.findMany({
           where: {
-            private: false
+            carerId: loggedinUser.userId
           },
           include: {
             carer: true

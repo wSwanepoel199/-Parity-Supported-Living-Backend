@@ -55,11 +55,16 @@ class AuthController {
   };
   static newUserLogin = async (req, res, next) => {
     try {
-      await auth.passReset(req.body);
+      const user = await auth.passReset(req.body);
+      const avatar = await icon.fetchIcon(user.userId);
       res.status(200).json({
         status: 200,
         data: {
-          message: 'User successfully updated'
+          message: 'User successfully updated',
+          user: {
+            ...user,
+            icon: avatar || 'No Icon'
+          }
         }
       });
     }
