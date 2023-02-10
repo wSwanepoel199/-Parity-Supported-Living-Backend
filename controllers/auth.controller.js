@@ -89,7 +89,7 @@ class AuthController {
   };
   static logout = async (req, res, next) => {
     try {
-      await auth.logout(req.cookies);
+      await auth.logout(req.cookies, req.body);
       if (process.env.NODE_ENV === "production") {
         res.clearCookie('jwt', {
           httpOnly: true,
