@@ -4,7 +4,7 @@ const createError = require("http-errors");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
-// { expiresIn: '1 days' }
+// { expiresIn: '30 minutes' }
 const signAccessToken = (payload) => {
   return new Promise((resolve, reject) => {
     jwt.sign({ payload }, accessTokenSecret, { expiresIn: '30 minutes' }, (err, token) => {
