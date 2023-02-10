@@ -4,6 +4,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors');
+const compression = require('compression');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -15,6 +16,8 @@ const fileRouter = require('./routes/file');
 const corsOptions = require('./bin/cors');
 
 const app = express();
+
+app.use(compression());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

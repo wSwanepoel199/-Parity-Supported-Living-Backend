@@ -11,9 +11,9 @@ class PostService {
       });
       return newPost;
     } catch (err) {
-      if (!newPost) {
-        throw createError.BadRequest("Could not create post");
-      }
+      // if (!newPost) {
+      //   throw createError.BadRequest("Could not create post");
+      // }
       handlePrismaErrors(err);
     }
     return;
@@ -36,8 +36,6 @@ class PostService {
         userCheck = true;
         delete data.carerId;
       }
-
-      console.log(data);
       findPost = await prisma.post.findUnique({
         where: {
           postId: data.postId
@@ -75,12 +73,29 @@ class PostService {
     return;
   }
   static async all(user) {
+    let allPosts;
     try {
-      const allPosts = await prisma.post.findMany({
-        include: {
-          carer: true
+      const loggedinUser = await prisma.user.findUnique({
+        where: {
+          userId: user
         }
       });
+      if (loggedinUser.role !== 'Carer') {
+        allPosts = await prisma.post.findMany({
+          include: {
+            carer: true
+          }
+        });
+      } else {
+        allPosts = await prisma.post.findMany({
+          where: {
+            carerId: loggedinUser.userId
+          },
+          include: {
+            carer: true
+          }
+        });
+      }
       if (allPosts) {
         return allPosts;
       } else {

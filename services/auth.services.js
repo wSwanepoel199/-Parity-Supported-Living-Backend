@@ -59,7 +59,7 @@ class AuthService {
 
       const refreshToken = await RefreshTokenService.create(user.userId, email.toLowerCase()); // generates a refreshtoken to be used for authentication
       user.accessToken = await jwt.signAccessToken(user.userId); //generates accessToken using jwt to be used for authentication
-
+      user.expireTimer = 1000 * 60 * 30;
       return { user: user, token: refreshToken }; //returns user and refreshtoken
     } catch (err) {
       console.log(err); //logs error for troubleshooting
@@ -126,7 +126,7 @@ class AuthService {
           password: password
         }
       });
-      return;
+      return user;
     } catch (err) {
       console.log(err);
       if (!user) throw createError.NotFound("Could not update password as user does not exist"); //if user can not be found, throws error
@@ -164,7 +164,17 @@ class AuthService {
             userId: user.userId
           }
         });
-        if (userTokens) await RefreshTokenService.clear(userTokens); //if atleast 1 is found, it is cleared from db
+        if (userTokens) {
+          for (const token of userTokens) {
+            console.log('clearing token ', token.id);
+            await prisma.RefreshToken.delete({
+              where: {
+                token: token.token
+              }
+            });
+          }
+          //await RefreshTokenService.clear(userTokens); //if atleast 1 is found, it is cleared from db
+        }
 
         await prisma.user.delete({ // deletes user
           where: {
