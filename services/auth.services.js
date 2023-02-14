@@ -140,12 +140,13 @@ class AuthService {
   static async logout(token, userId) {
     // checks if refresh token has expired on front then clears db of expired tokens
     if (!token?.jwt) {
+      console.log("userId", userId);
       const refreshTokens = await prisma.refreshToken.findMany({
         where: {
           userId: userId
         }
       });
-      await RefreshTokenService.clear(refreshTokens);
+      if (refreshTokens) await RefreshTokenService.clear(refreshTokens);
       return;
     }
     await RefreshTokenService.remove(token.jwt);  // removed non expired token from db
