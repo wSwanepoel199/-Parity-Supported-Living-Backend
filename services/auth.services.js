@@ -137,7 +137,7 @@ class AuthService {
   }
 
   // logs out existing user
-  static async logout(token, userId) {
+  static async logout(token, { userId }) {
     // checks if refresh token has expired on front then clears db of expired tokens
     if (!token?.jwt) {
       console.log("userId", userId);
