@@ -5,10 +5,10 @@ class ClientService {
   static async create(data) {
     try {
       console.log(data);
-      const client = await prisma.client.create({
-        data
-      });
-      return client;
+      // const client = await prisma.client.create({
+      //   data
+      // });
+      // return client;
     }
     catch (err) {
       handlePrismaErrors(err);

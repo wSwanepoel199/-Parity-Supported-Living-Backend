@@ -50,7 +50,7 @@ model Client{
   address String?
   phoneNumber Int?
   email String?
-  details String?
+  notes String?
   carers UsersClients[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
