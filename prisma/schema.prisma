@@ -20,7 +20,7 @@ model User {
   role Role @default(Carer)
   resetPassword Boolean @default(true)
   posts Post[] @relation("Carer")
-  clients UsersClients[]
+  clients Client[]
   refreshToken RefreshToken[] @relation("Token")
   icon Icon? @relation("Icon")
   createdAt DateTime @default(now())
@@ -48,23 +48,23 @@ model Client{
   firstName String
   lastName String?
   address String?
-  phoneNumber Int?
+  phoneNumber String?
   email String?
   notes String?
-  carers UsersClients[]
+  carers User[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model UsersClients {
-  user User @relation(fields: [userId], references: [userId])
-  userId String
-  client Client @relation(fields:[clientId], references: [clientId])
-  clientId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  @@id([userId, clientId])
-}
+// model UsersClients {
+//   user User @relation(fields: [userId], references: [userId])
+//   userId String
+//   client Client @relation(fields:[clientId], references: [clientId])
+//   clientId String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   @@id([userId, clientId])
+// }
 
 model RefreshToken {
   id Int @id @default(autoincrement())
