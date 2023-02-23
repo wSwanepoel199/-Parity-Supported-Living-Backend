@@ -20,6 +20,19 @@ class ClientService {
       handlePrismaErrors(err);
     }
   }
+  static async remove(client) {
+    try {
+      await prisma.client.delete({
+        where: {
+          clientId: client
+        }
+      });
+      return;
+    }
+    catch (err) {
+      handlePrismaErrors(err); //prisma error handler
+    }
+  }
   static async all(user) {
     let allClients;
     try {

@@ -8,5 +8,6 @@ router.get('/', Auth.user, clientController.all);
 
 router.post('/create', Auth.user, Auth.admin, clientController.create);
 
+router.post('/remove', Auth.user, Auth.admin, clientController.remove);
 
 module.exports = router;
