@@ -9,7 +9,7 @@ const createError = require('http-errors');
 class ClientController {
   static create = async (req, res, next) => {
     try {
-      const newClient = await client.create(req.body);
+      await client.create(req.body);
       res.status(201).json({
         status: 201,
         data: {

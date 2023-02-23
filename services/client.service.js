@@ -4,10 +4,8 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 class ClientService {
   static async create(data) {
     try {
-      console.log(data);
       const { carers, ...client } = data;
       const parsedCarers = carers.map((id) => { return { userId: id }; });
-      console.log(parsedCarers);
       const newClient = await prisma.client.create({
         data: {
           ...client,
@@ -16,11 +14,7 @@ class ClientService {
           }
         }
       });
-      console.log(newClient);
-      // const client = await prisma.client.create({
-      //   data
-      // });
-      // return client;
+      return;
     }
     catch (err) {
       handlePrismaErrors(err);
