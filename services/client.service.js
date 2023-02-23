@@ -23,9 +23,7 @@ class ClientService {
   static async remove(client) {
     try {
       await prisma.client.delete({
-        where: {
-          clientId: client
-        }
+        where: client
       });
       return;
     }
