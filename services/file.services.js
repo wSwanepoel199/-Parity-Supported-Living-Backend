@@ -56,6 +56,12 @@ class FileService {
                 return [k = 'kilos', v];
               } else if (k === "carerId") {
                 return [k, v];
+              } else if (k === "private") {
+                if (v === "true") {
+                  return [k, true];
+                } else {
+                  return [k, false];
+                }
               } else {
                 return [k.toLowerCase(), v];
               }

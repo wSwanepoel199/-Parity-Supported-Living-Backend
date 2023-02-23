@@ -26,14 +26,46 @@ class ClientService {
       handlePrismaErrors(err);
     }
   }
-  static async all() {
+  static async all(user) {
+    let allClients;
     try {
-      const allClients = await prisma.client.findMany({
-        include: {
-          carers: true
+      const loggedinUser = await prisma.user.findUnique({
+        where: {
+          userId: user
         }
-      }); //pulls all clients from db
-      return allClients;
+      });
+      if (loggedinUser.role !== 'Carer') {
+        allClients = await prisma.client.findMany({
+          include: {
+            carers: true
+          }
+        });
+      } else {
+        allClients = await prisma.client.findMany({
+          where: {
+            carers: {
+              some: {
+                userId: loggedinUser.userId
+              }
+            }
+          },
+          include: {
+            carers: true
+          }
+        });
+      }
+      if (allClients) {
+        return allClients;
+      } else {
+        return [];
+      }
+
+      // const allClients = await prisma.client.findMany({
+      //   include: {
+      //     carers: true
+      //   }
+      // }); //pulls all clients from db
+      // return allClients;
     } catch (err) {
       handlePrismaErrors(err); //prisma error handler
     }

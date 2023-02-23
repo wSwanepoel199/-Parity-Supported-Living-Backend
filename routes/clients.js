@@ -4,7 +4,7 @@ const Auth = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', Auth.user, Auth.admin, clientController.all);
+router.get('/', Auth.user, clientController.all);
 
 router.post('/create', Auth.user, Auth.admin, clientController.create);
 

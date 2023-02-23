@@ -25,7 +25,7 @@ class ClientController {
   static remove;
   static all = async (req, res, next) => {
     try {
-      const clients = await client.all();
+      const clients = await client.all(req.user);
       res.status(200).json({
         status: 200,
         data: {
