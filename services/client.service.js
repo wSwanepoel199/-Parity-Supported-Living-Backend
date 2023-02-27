@@ -14,7 +14,7 @@ class ClientService {
           }
         }
       });
-      return;
+      return newClient;
     }
     catch (err) {
       handlePrismaErrors(err);
@@ -60,6 +60,7 @@ class ClientService {
         });
       }
       if (allClients) {
+        await allClients.forEach((client) => client.name = `${client.firstName} ${client?.lastName}`);
         return allClients;
       } else {
         return [];

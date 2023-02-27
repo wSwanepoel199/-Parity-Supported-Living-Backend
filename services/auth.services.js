@@ -6,31 +6,41 @@ const exclude = require('../utils/exlude');
 const RefreshTokenService = require('./refreshToken.services');
 const IconService = require('./icon.service');
 const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const client = require('./client.service');
 
 
 class AuthService {
   // register new user
   static async register(data) {
-    if (data.name) {  // checks if name is present
-      data.name = data.name.split(' '); // splits name into array
-      data.firstName = data.name[0]; // assigns string at index 0 to first name
-      data.lastName = data.name[1]; // assigns string at index 1 to last name
-      delete data.name; //deletes the name value
+
+    const { clients, ...user } = data;
+    const parsedClients = clients.map((id) => { return { clientId: id }; });
+
+    if (user.name) {  // checks if name is present
+      user.name = data.name.split(' '); // splits name into array
+      user.firstName = data.name[0]; // assigns string at index 0 to first name
+      user.lastName = data.name[1]; // assigns string at index 1 to last name
+      delete user.name; //deletes the name value
     }
 
-    if (data.password) {
-      data.password = bcrypt.hashSync(data.password, 8);   // encrypts recieved password
+    if (user.password) {
+      user.password = bcrypt.hashSync(user.password, 8);   // encrypts recieved password
     } else {
-      data.password = bcrypt.hashSync(`${data.firstName}1234`, 8);
+      user.password = bcrypt.hashSync(`${user.firstName}1234`, 8);
     }
 
-    data.email = data.email.toLowerCase(); // converts provided email to lower case cause case insensitivity does not appear to be working
+    user.email = user.email.toLowerCase(); // converts provided email to lower case cause case insensitivity does not appear to be working
     try {
-      const user = await prisma.user.create({    // creates new user
-        data
+      const newUser = await prisma.user.create({    // creates new user
+        data: {
+          ...user,
+          clients: {
+            connect: parsedClients
+          }
+        }
       });
 
-      return user;   // returns new user object
+      return newUser;   // returns new user object
     } catch (err) {
       handlePrismaErrors(err);  // handles prisma specific erroes
     }
@@ -89,16 +99,62 @@ class AuthService {
     data.email = data.email.toLowerCase();  // converts provided email to lower case
 
     let updatedUser; //sets variable for later use
+    const { clients, ...user } = data;
     try {
       updatedUser = await prisma.user.update({  // updates existing user with new information
         where: {
-          userId: data.userId
+          userId: user.userId
         },
-        data
+        data: {
+          ...user
+        },
+        include: {
+          clients: true
+        }
       });
     } catch (err) {
       if (!updatedUser) throw createError.NotFound("Could not find user to update"); //conditional that errors if no user is found
       handlePrismaErrors(err); //prisma error handler
+    }
+    if (clients) {
+      // console.log(updatedUser);
+      const updatedUserClientsId = updatedUser.clients.map(client => client.clientId);
+      const removedClients = await updatedUserClientsId.filter(filterClient => !clients.includes(filterClient));
+      const newClients = await clients.filter(newClient => !updatedUserClientsId.includes(newClient));
+      if (removedClients) {
+        try {
+          await prisma.user.update({
+            where: {
+              userId: user.userId
+            },
+            data: {
+              clients: {
+                disconnect: removedClients.map((id) => { return { clientId: id }; })
+              }
+            }
+          });
+        }
+        catch (err) {
+          handlePrismaErrors(err); //prisma error handler
+        }
+      }
+      if (newClients) {
+        try {
+          await prisma.user.update({
+            where: {
+              userId: user.userId
+            },
+            data: {
+              clients: {
+                connect: newClients.map((id) => { return { clientId: id }; })
+              }
+            }
+          });
+        }
+        catch (err) {
+          handlePrismaErrors(err); //prisma error handler
+        }
+      }
     }
     return;
   }
@@ -197,12 +253,17 @@ class AuthService {
   static async all() {
     let allUsers; //variable for later use
     try {
-      allUsers = await prisma.user.findMany(); //pulls all users from db
+      allUsers = await prisma.user.findMany({
+        include: {
+          clients: true
+        }
+      }); //pulls all users from db
       const users = allUsers.filter(item => item.firstName !== "ParityAdmin"); //filters out man admin to prevent locking out of app
       // runs forEach on found users to remove passwords and add in name for front end compatibility
       await users.forEach((user) => {
         user.name = `${user.firstName} ${user.lastName !== null ? user.lastName : ''}`;
         exclude(user, ['password']);
+        user.clients.forEach((client) => client.name = `${client.firstName} ${client?.lastName}`);
       });
       return users;
     } catch (err) {
