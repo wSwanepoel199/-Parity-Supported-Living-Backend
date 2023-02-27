@@ -20,6 +20,8 @@ class FileService {
             Object.entries(user).map(([k, v]) => {
               if (k === "userId" || k === 'firstName' || k === 'lastName') {
                 return [k, v];
+              } else if (k === "clients") {
+                return [k, v.split(', ')];
               } else {
                 return [k.toLowerCase(), v];
               }

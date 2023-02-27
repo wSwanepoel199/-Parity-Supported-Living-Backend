@@ -22,9 +22,10 @@ class PostService {
     for (let key of ["carer", "createdAt", "updatedAt"]) {
       delete data[key];
     }
-    let findPost;
     let updatePost;
     let userCheck;
+    let clientCheck;
+    console.log(data);
     try {
       if (data.carerId !== '') {
         userCheck = await prisma.user.findUnique({
@@ -36,11 +37,24 @@ class PostService {
         userCheck = true;
         delete data.carerId;
       }
-      findPost = await prisma.post.findUnique({
+    }
+    catch (err) {
+      if (!userCheck) throw createError.UnprocessableEntity("Invalid carer ID provided");
+      handlePrismaErrors(err);
+    }
+    try {
+      // make conditional check to check if clientId is provided
+      clientCheck = await prisma.client.findUnique({
         where: {
-          postId: data.postId
+          clientId: data.clientId
         }
       });
+    }
+    catch (err) {
+      if (!clientCheck) throw createError.UnprocessableEntity("Invalid client ID provided");
+      handlePrismaErrors(err);
+    }
+    try {
       updatePost = await prisma.post.update({
         where: {
           postId: data.postId
@@ -50,10 +64,8 @@ class PostService {
 
       return updatePost;
     } catch (err) {
-      handlePrismaErrors(err);
-      if (!userCheck) throw createError.UnprocessableEntity("Invalid carer ID provided");
-      if (!findPost) throw createError.NotFound("No Post with that id");
       if (!updatePost) throw createError.UnprocessableEntity("Could not update post");
+      handlePrismaErrors(err);
     }
     return;
   }
@@ -83,7 +95,8 @@ class PostService {
       if (loggedinUser.role !== 'Carer') {
         allPosts = await prisma.post.findMany({
           include: {
-            carer: true
+            carer: true,
+            client: true
           }
         });
       } else {
@@ -92,7 +105,8 @@ class PostService {
             carerId: loggedinUser.userId
           },
           include: {
-            carer: true
+            carer: true,
+            client: true
           }
         });
       }

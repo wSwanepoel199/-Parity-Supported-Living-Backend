@@ -31,11 +31,13 @@ model Post {
   id Int @id @default(autoincrement())
   carer User? @relation("Carer", fields:[carerId], references: [userId])
   carerId String?
-  client String?
+  clientString String?
   hours Int?
   date DateTime?
   kilos Int?
   notes String?
+  client Client? @relation("Client", fields: [clientId], references: [clientId])
+  clientId String?
   private Boolean? @default(false)
   postId String @unique @default(uuid())
   createdAt DateTime @default(now())
@@ -52,6 +54,7 @@ model Client{
   email String?
   notes String?
   carers User[]
+  posts Post[] @relation("Client")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
