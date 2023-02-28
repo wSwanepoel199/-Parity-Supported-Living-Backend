@@ -19,7 +19,7 @@ class PostService {
     return;
   }
   static async update(data) {
-    for (let key of ["carer", "createdAt", "updatedAt"]) {
+    for (let key of ["carer", "createdAt", "updatedAt", "client"]) {
       delete data[key];
     }
     let updatePost;
@@ -43,12 +43,16 @@ class PostService {
       handlePrismaErrors(err);
     }
     try {
-      // make conditional check to check if clientId is provided
-      clientCheck = await prisma.client.findUnique({
-        where: {
-          clientId: data.clientId
-        }
-      });
+      if (data.clientId !== '') {
+        clientCheck = await prisma.client.findUnique({
+          where: {
+            clientId: data.clientId
+          }
+        });
+      } else {
+        clientCheck = true;
+        delete data.clientId;
+      }
     }
     catch (err) {
       if (!clientCheck) throw createError.UnprocessableEntity("Invalid client ID provided");

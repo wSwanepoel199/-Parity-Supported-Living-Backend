@@ -18,12 +18,16 @@ class FileService {
           }
           const parsedUser = Object.fromEntries(
             Object.entries(user).map(([k, v]) => {
-              if (k === "userId" || k === 'firstName' || k === 'lastName') {
-                return [k, v];
-              } else if (k === "clients") {
-                return [k, v.split(', ')];
-              } else {
-                return [k.toLowerCase(), v];
+              switch (k) {
+                case "userId" || 'firstName' || 'lastName': {
+                  return [k, v];
+                }
+                case "clients": {
+                  return [k, v.split(', ')];
+                }
+                default: {
+                  return [k.toLowerCase(), v];
+                }
               }
             })
           );
@@ -54,22 +58,28 @@ class FileService {
           // TODO: if userId doesn't exist, delete id
           const parsedPost = Object.fromEntries(
             Object.entries(post).map(([k, v]) => {
-              if (k === "Distance(KM)") {
-                return [k = 'kilos', v];
-              } else if (k === "carerId") {
-                return [k, v];
-              } else if (k === "private") {
-                if (v === "true") {
-                  return [k, true];
-                } else {
-                  return [k, false];
+              switch (k) {
+                case "Distance(KM)": {
+                  return [k = "kilos", v];
                 }
-              } else {
-                return [k.toLowerCase(), v];
+                case "carerId" || "clientId": {
+                  return [k, v];
+                }
+                case "private": {
+                  if (v === "true") {
+                    return [k, true];
+                  } else {
+                    return [k, false];
+                  }
+                }
+                default: {
+                  return [k.toLowerCase(), v];
+                }
               }
             })
           );
           delete parsedPost.carer;
+          delete parsedPost.client;
           if (parsedPost.carerId) {
             const checkUser = await prisma.user.findUnique({
               where: {
@@ -77,6 +87,14 @@ class FileService {
               }
             });
             if (!checkUser) delete parsedPost.carerId;
+          }
+          if (parsedPost.clientId) {
+            const checkClient = await prisma.client.findUnique({
+              where: {
+                clientId: parsedPost.clientId
+              }
+            });
+            if (!checkClient) delete parsedPost.clientId;
           }
           parsedPost.date = new Date(parsedPost.date).toISOString();
           var newPost = await postService.create(parsedPost);
