@@ -21,7 +21,20 @@ class ClientController {
       next(createError(err.statusCode, err.message));
     }
   };
-  static edit;
+  static update = async (req, res, next) => {
+    try {
+      await client.update(req.body);
+      res.status(200).json({
+        status: 200,
+        data: {
+          message: 'Client successfully updated'
+        }
+      });
+    }
+    catch (err) {
+      next(createError(err.statusCode, err.message));
+    }
+  };
   static remove = async (req, res, next) => {
     try {
       await client.remove(req.body);

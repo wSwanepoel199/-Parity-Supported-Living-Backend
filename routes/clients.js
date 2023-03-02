@@ -10,4 +10,6 @@ router.post('/create', Auth.user, Auth.admin, clientController.create);
 
 router.post('/remove', Auth.user, Auth.admin, clientController.remove);
 
+router.put('/update', Auth.user, Auth.admin, clientController.update);
+
 module.exports = router;
