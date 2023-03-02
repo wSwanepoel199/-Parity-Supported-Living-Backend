@@ -34,7 +34,7 @@ class ClientService {
   static async update(data) {
     console.log(data);
     // deletes listed keys from provided object
-    for (let key of ["createdAt", "updatedAt"]) {
+    for (let key of ["createdAt", "updatedAt", "posts"]) {
       delete data[key];
     }
 
