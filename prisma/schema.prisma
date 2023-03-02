@@ -31,7 +31,7 @@ model Post {
   id Int @id @default(autoincrement())
   carer User? @relation("Carer", fields:[carerId], references: [userId])
   carerId String?
-  clientString String?
+  clientName String?
   hours Int?
   date DateTime?
   kilos Int?
