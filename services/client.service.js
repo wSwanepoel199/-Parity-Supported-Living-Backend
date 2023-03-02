@@ -112,7 +112,8 @@ class ClientService {
       if (loggedinUser.role !== 'Carer') {
         allClients = await prisma.client.findMany({
           include: {
-            carers: true
+            carers: true,
+            posts: true
           }
         });
       } else {
@@ -125,7 +126,8 @@ class ClientService {
             }
           },
           include: {
-            carers: true
+            carers: true,
+            posts: true
           }
         });
       }
