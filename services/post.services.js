@@ -19,12 +19,13 @@ class PostService {
     return;
   }
   static async update(data) {
-    for (let key of ["carer", "createdAt", "updatedAt"]) {
+    for (let key of ["carer", "createdAt", "updatedAt", "client"]) {
       delete data[key];
     }
-    let findPost;
     let updatePost;
     let userCheck;
+    let clientCheck;
+    console.log(data);
     try {
       if (data.carerId !== '') {
         userCheck = await prisma.user.findUnique({
@@ -36,11 +37,28 @@ class PostService {
         userCheck = true;
         delete data.carerId;
       }
-      findPost = await prisma.post.findUnique({
-        where: {
-          postId: data.postId
-        }
-      });
+    }
+    catch (err) {
+      if (!userCheck) throw createError.UnprocessableEntity("Invalid carer ID provided");
+      handlePrismaErrors(err);
+    }
+    try {
+      if (data.clientId !== '') {
+        clientCheck = await prisma.client.findUnique({
+          where: {
+            clientId: data.clientId
+          }
+        });
+      } else {
+        clientCheck = true;
+        delete data.clientId;
+      }
+    }
+    catch (err) {
+      if (!clientCheck) throw createError.UnprocessableEntity("Invalid client ID provided");
+      handlePrismaErrors(err);
+    }
+    try {
       updatePost = await prisma.post.update({
         where: {
           postId: data.postId
@@ -50,10 +68,8 @@ class PostService {
 
       return updatePost;
     } catch (err) {
-      handlePrismaErrors(err);
-      if (!userCheck) throw createError.UnprocessableEntity("Invalid carer ID provided");
-      if (!findPost) throw createError.NotFound("No Post with that id");
       if (!updatePost) throw createError.UnprocessableEntity("Could not update post");
+      handlePrismaErrors(err);
     }
     return;
   }
@@ -83,7 +99,8 @@ class PostService {
       if (loggedinUser.role !== 'Carer') {
         allPosts = await prisma.post.findMany({
           include: {
-            carer: true
+            carer: true,
+            client: true
           }
         });
       } else {
@@ -92,7 +109,8 @@ class PostService {
             carerId: loggedinUser.userId
           },
           include: {
-            carer: true
+            carer: true,
+            client: true
           }
         });
       }
