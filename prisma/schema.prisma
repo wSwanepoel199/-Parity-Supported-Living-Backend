@@ -31,14 +31,14 @@ model Post {
   id Int @id @default(autoincrement())
   carer User? @relation("Carer", fields:[carerId], references: [userId])
   carerId String?
-  clientName String?
+  carerName String?
   hours Int?
   date DateTime?
   kilos Int?
   notes String?
   client Client? @relation("Client", fields: [clientId], references: [clientId])
   clientId String?
-  carerName String?
+  clientName String?
   private Boolean? @default(false)
   postId String @unique @default(uuid())
   createdAt DateTime @default(now())

@@ -142,29 +142,40 @@ class FileService {
               }
             })
           );
-          try {
-            if (parsedPost.carerId) {
-              await prisma.user.findUnique({
+          if (parsedPost.carerId) {
+            try {
+              console.log("carerCheck");
+              const carerCheck = await prisma.user.findUnique({
                 where: {
                   userId: parsedPost.carerId
                 }
               });
+              if (!carerCheck) delete parsedPost.carerId;
             }
-            if (parsedPost.clientId) {
-              await prisma.client.findUnique({
+            catch (err) {
+              handlePrismaErrors(err);
+              delete parsedPost.carerId;
+            }
+          }
+          if (parsedPost.clientId) {
+            try {
+              console.log("clientCheck");
+              const clientCheck = await prisma.client.findUnique({
                 where: {
                   clientId: parsedPost.clientId
                 }
               });
+              if (!clientCheck) delete parsedPost.clientId;
             }
-          }
-          catch (err) {
-            handlePrismaErrors(err);
-            delete parsedPost.carerId;
-            delete parsedPost.clientId;
+            catch (err) {
+              console.log("clientCheckFail");
+              handlePrismaErrors(err);
+              delete parsedPost.clientId;
+            }
           }
           try {
             parsedPost.private = parsedPost.parsedPost === "true" ? true : false;
+            console.log(parsedPost);
             await postService.create(parsedPost);
           }
           catch (err) {
