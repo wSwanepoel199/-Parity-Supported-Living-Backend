@@ -174,7 +174,7 @@ class FileService {
             }
           }
           try {
-            parsedPost.private = parsedPost.parsedPost === "true" ? true : false;
+            parsedPost.private = parsedPost.private === "true" ? true : false;
             console.log(parsedPost);
             await postService.create(parsedPost);
           }
