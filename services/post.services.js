@@ -6,11 +6,8 @@ class PostService {
   static async create(data) {
     try {
       const newPost = await prisma.post.create({
-        data: {
-          ...data
-        }
+        data
       });
-      console.log(newPost);
       return newPost;
     } catch (err) {
       // if (!newPost) {
@@ -28,7 +25,6 @@ class PostService {
     let updatePost;
     let userCheck;
     let clientCheck;
-    console.log(data);
     try {
       if (data.carerId !== '') {
         userCheck = await prisma.user.findUnique({

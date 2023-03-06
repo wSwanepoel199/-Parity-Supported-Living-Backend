@@ -53,7 +53,7 @@ class FileService {
               console.log("error: ", err.message);
               handlePrismaErrors(err);
               console.log("Could not create new notes entry");
-              throw createError.UnprocessableEntity(`Failed to create user ${parsedUser.firstName}`);
+              throw createError.UnprocessableEntity(`Failed to create ${parsedUser.firstName}`);
             }
           }
         }
@@ -175,7 +175,6 @@ class FileService {
           }
           try {
             parsedPost.private = parsedPost.private === "true" ? true : false;
-            console.log(parsedPost);
             await postService.create(parsedPost);
           }
           catch (err) {
