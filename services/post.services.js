@@ -4,17 +4,20 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class PostService {
   static async create(data) {
-    let newPost;
     try {
-      newPost = await prisma.post.create({
-        data
+      const newPost = await prisma.post.create({
+        data: {
+          ...data
+        }
       });
+      console.log(newPost);
       return newPost;
     } catch (err) {
       // if (!newPost) {
       //   throw createError.BadRequest("Could not create post");
       // }
       handlePrismaErrors(err);
+      console.log(err);
     }
     return;
   }

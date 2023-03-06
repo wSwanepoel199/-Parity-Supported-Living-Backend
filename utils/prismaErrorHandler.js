@@ -2,6 +2,7 @@ const createError = require("http-errors");
 
 
 const handlePrismaErrors = (err) => {
+  console.log(err);
   switch (err.constructor.name) {
     case "PrismaClientKnownRequestError": {
       console.log(err.constructor.name);
