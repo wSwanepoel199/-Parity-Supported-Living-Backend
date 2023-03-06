@@ -4,14 +4,15 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 const userService = require('./auth.services');
 const iconService = require('./icon.service');
 const postService = require('./post.services');
+const clientService = require('./client.service');
 
 
 
 
 class FileService {
   static async upload(file, { type }) {
-    try {
-      if (type === "user") {
+    switch (type) {
+      case "user": {
         for (const user of file) {
           if (!user) {
             continue;
@@ -19,7 +20,9 @@ class FileService {
           const parsedUser = Object.fromEntries(
             Object.entries(user).map(([k, v]) => {
               switch (k) {
-                case "userId" || 'firstName' || 'lastName': {
+                case "userId":
+                case 'firstName':
+                case 'lastName': {
                   return [k, v];
                 }
                 case "clients": {
@@ -31,46 +34,49 @@ class FileService {
               }
             })
           );
-          console.log(parsedUser);
-          const checkUser = await prisma.user.findUnique({
-            where: {
-              email: parsedUser.email
-            }
-          });
-          if (checkUser) {
+          try {
+            const checkUser = await prisma.user.findUnique({
+              where: {
+                email: parsedUser?.email
+              }
+            });
             console.log(`${checkUser.firstName} already exists`);
-          } else {
-            var newUser = await userService.register(parsedUser);
-            await iconService.genIcon(newUser.userId);
-            console.log(`Created ${newUser.firstName} with id ${newUser.userId}`);
-          }
-
-          if (!newUser) {
-            console.log("Could not create new notes entry");
             continue;
+          } catch (err) {
+            try {
+              var newUser = await userService.register(parsedUser);
+              await iconService.genIcon(newUser.userId);
+              console.log(`Created ${newUser.firstName} with id ${newUser.userId}`);
+              continue;
+            }
+            catch (err) {
+              console.log("error: ", err.message);
+              handlePrismaErrors(err);
+              console.log("Could not create new notes entry");
+              throw createError.UnprocessableEntity(`Failed to create user ${parsedUser.firstName}`);
+            }
           }
         }
-      } else if (type === "post") {
-        for (const post of file) {
-          if (!post) {
+        return;
+      }
+      case "client": {
+        for (const client of file) {
+          if (!client) {
             continue;
           }
-          // TODO: if userId doesn't exist, delete id
-          const parsedPost = Object.fromEntries(
-            Object.entries(post).map(([k, v]) => {
+          const parsedClient = Object.fromEntries(
+            Object.entries(client).map(([k, v]) => {
               switch (k) {
-                case "Distance(KM)": {
-                  return [k = "kilos", v];
-                }
-                case "carerId" || "clientId": {
+                case 'clientId':
+                case 'firstName':
+                case 'lastName': {
                   return [k, v];
                 }
-                case "private": {
-                  if (v === "true") {
-                    return [k, true];
-                  } else {
-                    return [k, false];
-                  }
+                case 'Number': {
+                  return ['phoneNumber', v];
+                }
+                case "carers": {
+                  return [k, v.split(', ')];
                 }
                 default: {
                   return [k.toLowerCase(), v];
@@ -78,40 +84,102 @@ class FileService {
               }
             })
           );
-          delete parsedPost.carer;
-          delete parsedPost.client;
-          if (parsedPost.carerId) {
-            const checkUser = await prisma.user.findUnique({
-              where: {
-                userId: parsedPost.carerId
-              }
-            });
-            if (!checkUser) delete parsedPost.carerId;
-          }
-          if (parsedPost.clientId) {
+          try {
             const checkClient = await prisma.client.findUnique({
               where: {
-                clientId: parsedPost.clientId
+                clientId: parsedClient?.clientId
               }
             });
-            if (!checkClient) delete parsedPost.clientId;
-          }
-          parsedPost.date = new Date(parsedPost.date).toISOString();
-          var newPost = await postService.create(parsedPost);
-          if (!newPost) {
-            console.log("Could not create new notes entry");
+            console.log(`${checkClient.firstName} already exists`);
             continue;
+          } catch (err) {
+            try {
+              var newClient = await clientService.create(parsedClient);
+              console.log(`Created ${newClient.firstName} with id ${newClient.clientId}`);
+              continue;
+            }
+            catch (err) {
+              console.log("error: ", err.message);
+              handlePrismaErrors(err);
+              console.log("Could not create new notes entry");
+              throw createError.UnprocessableEntity(`Failed to create user ${parsedClient.firstName}`);
+            }
           }
         }
-      } else {
+        return;
+      }
+      case "post": {
+        for (const post of file) {
+          if (!post) {
+            continue;
+          }
+          const parsedPost = Object.fromEntries(
+            Object.entries(post).map(([k, v]) => {
+              switch (k) {
+                case "Distance(KM)": {
+                  return [k = "kilos", v];
+                }
+                case "carerId":
+                case "clientId":
+                case "clientName": {
+                  return [k, v];
+                }
+                case "private": {
+                  return v === "true" ? [k, true] : [k, false];
+                }
+                case "carer": {
+                  delete parsedPost.carer;
+                }
+                case "client": {
+                  delete parsedPost.client;
+                }
+                case "date": {
+                  return [k, v = new Date(parsedPost.date).toISOString()];
+                }
+                default: {
+                  return [k.toLowerCase(), v];
+                }
+              }
+            })
+          );
+          try {
+            if (parsedPost.carerId) {
+              await prisma.user.findUnique({
+                where: {
+                  userId: parsedPost.carerId
+                }
+              });
+            }
+            if (parsedPost.clientId) {
+              await prisma.client.findUnique({
+                where: {
+                  clientId: parsedPost.clientId
+                }
+              });
+            }
+          }
+          catch (err) {
+            handlePrismaErrors(err);
+            delete parsedPost.carerId;
+            delete parsedPost.clientId;
+          }
+          try {
+            parsedPost.private = parsedPost.parsedPost === "true" ? true : false;
+            await postService.create(parsedPost);
+          }
+          catch (err) {
+            console.error(err);
+            if (typeof parsedPost.private === "string") throw createError.UnprocessableEntity("private failed to convert from string");
+            handlePrismaErrors(err);
+            console.log("Could not create new notes entry");
+            break;
+          }
+        }
+        return;
+      }
+      default: {
         throw createError.UnprocessableEntity("Could not process uploaded file");
       }
-      return;
-    } catch (err) {
-      console.log('err:', err);
-      if (!['user', 'post'].includes(type)) throw createError.UnprocessableEntity("Could not process uploaded file");
-      handlePrismaErrors(err);
-      throw createError.UnprocessableEntity("Failed to create new entires from uploaded file");
     }
   }
 }

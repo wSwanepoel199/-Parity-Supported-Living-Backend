@@ -38,6 +38,7 @@ model Post {
   notes String?
   client Client? @relation("Client", fields: [clientId], references: [clientId])
   clientId String?
+  carerName String?
   private Boolean? @default(false)
   postId String @unique @default(uuid())
   createdAt DateTime @default(now())

@@ -6,7 +6,6 @@ const exclude = require('../utils/exlude');
 const RefreshTokenService = require('./refreshToken.services');
 const IconService = require('./icon.service');
 const handlePrismaErrors = require('../utils/prismaErrorHandler');
-const client = require('./client.service');
 
 
 class AuthService {
@@ -14,7 +13,16 @@ class AuthService {
   static async register(data) {
 
     const { clients, ...user } = data;
-    const parsedClients = clients.map((id) => { return { clientId: id }; });
+    // const parsedClients = clients?.map((id) => { return { clientId: id }; });
+    console.log(clients);
+    const parsedClients = clients ? await prisma.client.findMany({
+      where: {
+        clientId: { in: clients }
+      },
+      select: {
+        clientId: true
+      }
+    }) : [];
 
     if (user.name) {  // checks if name is present
       user.name = data.name.split(' '); // splits name into array

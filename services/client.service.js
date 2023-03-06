@@ -5,16 +5,28 @@ class ClientService {
   static async create(data) {
     try {
       const { carers, ...client } = data;
-      const parsedCarers = carers.map((id) => { return { userId: id }; });
-      const newClient = await prisma.client.create({
-        data: {
-          ...client,
-          carers: {
-            connect: parsedCarers
-          }
+      const parsedCarers = carers ? await prisma.user.findMany({
+        where: {
+          userId: { in: carers }
+        },
+        select: {
+          userId: true
         }
-      });
-      return newClient;
+      }) : [];
+      try {
+        const newClient = await prisma.client.create({
+          data: {
+            ...client,
+            carers: {
+              connect: parsedCarers
+            }
+          }
+        });
+        return newClient;
+      }
+      catch (err) {
+        handlePrismaErrors(err);  // handles prisma specific erroes
+      }
     }
     catch (err) {
       handlePrismaErrors(err);
