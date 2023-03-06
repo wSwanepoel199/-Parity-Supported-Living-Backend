@@ -6,11 +6,8 @@ class PostService {
   static async create(data) {
     try {
       const newPost = await prisma.post.create({
-        data: {
-          ...data
-        }
+        data
       });
-      console.log(newPost);
       return newPost;
     } catch (err) {
       // if (!newPost) {
