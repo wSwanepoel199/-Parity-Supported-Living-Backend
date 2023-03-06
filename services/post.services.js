@@ -25,7 +25,6 @@ class PostService {
     let updatePost;
     let userCheck;
     let clientCheck;
-    console.log(data);
     try {
       if (data.carerId !== '') {
         userCheck = await prisma.user.findUnique({
