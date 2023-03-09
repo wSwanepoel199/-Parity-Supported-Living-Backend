@@ -97,6 +97,9 @@ class PostService {
       });
       if (loggedinUser.role !== 'Carer') {
         allPosts = await prisma.post.findMany({
+          orderBy: {
+            date: 'desc'
+          },
           include: {
             carer: true,
             client: true
@@ -106,6 +109,9 @@ class PostService {
         allPosts = await prisma.post.findMany({
           where: {
             carerId: loggedinUser.userId
+          },
+          orderBy: {
+            date: 'desc'
           },
           include: {
             carer: true,
