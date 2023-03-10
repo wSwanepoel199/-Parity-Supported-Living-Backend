@@ -108,7 +108,10 @@ class PostService {
       } else {
         allPosts = await prisma.post.findMany({
           where: {
-            carerId: loggedinUser.userId
+            carerId: loggedinUser.userId,
+            NOT: {
+              clientId: null
+            }
           },
           orderBy: {
             date: 'desc'
