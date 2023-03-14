@@ -109,6 +109,20 @@ class AuthService {
     let updatedUser; //sets variable for later use
     const { clients, ...user } = data;
     try {
+      const refreshTokens = await prisma.refreshToken.findMany({
+        where: {
+          userId: user.userId
+        }
+      });
+      if (refreshTokens) {
+        console.log(refreshTokens);
+        await RefreshTokenService.clear(refreshTokens, { all: true });
+      }
+    }
+    catch (err) {
+      handlePrismaErrors(err); //prisma error handler
+    }
+    try {
       updatedUser = await prisma.user.update({  // updates existing user with new information
         where: {
           userId: user.userId

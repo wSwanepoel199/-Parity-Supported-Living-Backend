@@ -61,9 +61,9 @@ class RefreshTokenService {
     }
     return;
   }
-  static async clear(refreshTokens) {
+  static async clear(refreshTokens, { all } = { all: false }) {
     for (const token of refreshTokens) {
-      if (!token.expiresAt) {
+      if (!token.expiresAt || all) {
         console.log('clearing token ', token.id);
         await prisma.RefreshToken.delete({
           where: {
