@@ -120,6 +120,7 @@ class FileService {
                   return [k = "kilos", v];
                 }
                 case "carerId":
+                case "carerName":
                 case "clientId":
                 case "clientName": {
                   return [k, v];
@@ -144,7 +145,6 @@ class FileService {
           );
           if (parsedPost.carerId) {
             try {
-              console.log("carerCheck");
               const carerCheck = await prisma.user.findUnique({
                 where: {
                   userId: parsedPost.carerId
