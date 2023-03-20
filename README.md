@@ -32,7 +32,7 @@ REFRESH_TOKEN_SECRET: A generated token used for signing refresh tokens
 
 PORT: the port for the server to use
 
-DATABASE_URI: The uri for database intended to be used with the server, a PostgreSQL database is recommended
+DATABASE_URL: The uri for database intended to be used with the server, a PostgreSQL database is recommended
 ```
 
 Once these values have been defined in your .env you can follow the steps in Starting the Server below.
