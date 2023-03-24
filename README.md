@@ -39,6 +39,8 @@ Once these values have been defined in your .env you can follow the steps in Sta
 
 ### Starting the Server
 
+Webpack dev and prod servers are setup to use https protocol, follow [mkcert]("https://github.com/FiloSottile/mkcert") instructions to install and generate the required key.pem and cert.pem in the certs folder
+
 To run the dev server use
 
 ```bash
