@@ -364,7 +364,7 @@ class FileService {
         if (typeof parsedPost.private === "string") throw createError.UnprocessableEntity("private failed to convert from string");
         handlePrismaErrors(err);
         console.log("Could not create new notes entry");
-        break;
+        throw createError.UnprocessableEntity("Could not process uploaded file");
       }
     }
     return;
