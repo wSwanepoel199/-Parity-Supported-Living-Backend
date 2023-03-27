@@ -290,7 +290,7 @@ class FileService {
     }
     return;
   }
-  static async uploadPost(post) {
+  static async uploadPost(file) {
     for (const post of file) {
       if (!post) {
         continue;
