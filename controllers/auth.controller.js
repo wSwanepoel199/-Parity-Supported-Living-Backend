@@ -34,8 +34,8 @@ class AuthController {
           httpOnly: true,
           // sameSite: "None",
           // secure: true,
-          // maxAge: (1000 * 60 * 60 * 24 * 200)
-          maxAge: (1000 * 60 * 10)
+          maxAge: (1000 * 60 * 60 * 24 * 200)
+          // maxAge: (1000 * 60 * 10)
         });
       }
       res.status(200).json({

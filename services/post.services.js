@@ -4,9 +4,8 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class PostService {
   static async create(data) {
-    let newPost;
     try {
-      newPost = await prisma.post.create({
+      const newPost = await prisma.post.create({
         data
       });
       return newPost;
@@ -15,16 +14,17 @@ class PostService {
       //   throw createError.BadRequest("Could not create post");
       // }
       handlePrismaErrors(err);
+      console.log(err);
     }
     return;
   }
   static async update(data) {
-    for (let key of ["carer", "createdAt", "updatedAt"]) {
+    for (let key of ["carer", "createdAt", "updatedAt", "client"]) {
       delete data[key];
     }
-    let findPost;
     let updatePost;
     let userCheck;
+    let clientCheck;
     try {
       if (data.carerId !== '') {
         userCheck = await prisma.user.findUnique({
@@ -36,11 +36,28 @@ class PostService {
         userCheck = true;
         delete data.carerId;
       }
-      findPost = await prisma.post.findUnique({
-        where: {
-          postId: data.postId
-        }
-      });
+    }
+    catch (err) {
+      if (!userCheck) throw createError.UnprocessableEntity("Invalid carer ID provided");
+      handlePrismaErrors(err);
+    }
+    try {
+      if (data.clientId !== '') {
+        clientCheck = await prisma.client.findUnique({
+          where: {
+            clientId: data.clientId
+          }
+        });
+      } else {
+        clientCheck = true;
+        delete data.clientId;
+      }
+    }
+    catch (err) {
+      if (!clientCheck) throw createError.UnprocessableEntity("Invalid client ID provided");
+      handlePrismaErrors(err);
+    }
+    try {
       updatePost = await prisma.post.update({
         where: {
           postId: data.postId
@@ -50,10 +67,8 @@ class PostService {
 
       return updatePost;
     } catch (err) {
-      handlePrismaErrors(err);
-      if (!userCheck) throw createError.UnprocessableEntity("Invalid carer ID provided");
-      if (!findPost) throw createError.NotFound("No Post with that id");
       if (!updatePost) throw createError.UnprocessableEntity("Could not update post");
+      handlePrismaErrors(err);
     }
     return;
   }
@@ -82,17 +97,28 @@ class PostService {
       });
       if (loggedinUser.role !== 'Carer') {
         allPosts = await prisma.post.findMany({
+          orderBy: {
+            date: 'desc'
+          },
           include: {
-            carer: true
+            carer: true,
+            client: true
           }
         });
       } else {
         allPosts = await prisma.post.findMany({
           where: {
-            carerId: loggedinUser.userId
+            carerId: loggedinUser.userId,
+            NOT: {
+              clientId: null
+            }
+          },
+          orderBy: {
+            date: 'desc'
           },
           include: {
-            carer: true
+            carer: true,
+            client: true
           }
         });
       }
