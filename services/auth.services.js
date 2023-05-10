@@ -280,7 +280,7 @@ class AuthService {
           clients: true
         }
       }); //pulls all users from db
-      const users = allUsers.filter(item => item.firstName !== "ParityAdmin"); //filters out man admin to prevent locking out of app
+      const users = allUsers.filter(item => item.id !== 1); //filters out man admin to prevent locking out of app
       // runs forEach on found users to remove passwords and add in name for front end compatibility
       await users.forEach((user) => {
         user.name = `${user.firstName} ${user.lastName !== null ? user.lastName : ''}`;

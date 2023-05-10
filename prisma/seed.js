@@ -88,7 +88,7 @@ async function seed() {
   console.log(process.env.ENV);
   const admin = {
     email: "Admin@paritysl.com",
-    password: "admin",
+    password: process.env.ADMIN_PASSWORD,
     name: "ParityAdmin",
     role: "Admin",
     resetPassword: false,

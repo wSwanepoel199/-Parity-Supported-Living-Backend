@@ -27,14 +27,16 @@ touch .env
 Once the .env file is created open in and define the following values
 
 ```text
-ACCESS_TOKEN_SECRET: A generated token used for signing access tokens
-REFRESH_TOKEN_SECRET: A generated token used for signing refresh tokens
+ACCESS_TOKEN_SECRET: A randomly generated string used for signing short term jwi tokens
+REFRESH_TOKEN_SECRET: A randomly generated string used for signing long term jwi tokens
 
 PORT: the port for the server to use
 
 DATABASE_URL: The uri for database intended to be used with the server, a PostgreSQL database is recommended
 
 FRONT_END: A list of front end URLs for CORS, each url should be seperated by a ', '
+
+ADMIN_PASSWORD= the password that will be used for the default admin user
 ```
 
 Once these values have been defined in your .env you can follow the steps in Starting the Server below.
@@ -70,7 +72,7 @@ PSL Notes Backend provides several services for the front end;
 - Auth Service: Allows for the creation user details and management of signed in users via an Authentication Token system that employes short term Auth Tokens with can be freely refreshed if a much more long term Refresh Token is provided. It also allows for users to be edited and deleted from the db, in addition to which clients are linked to specific users.
 - Refresh Token Service: This service allows for the creation and storage of refresh tokens. It tracks exisiting refresh tokesn via storing them in the database. It also allows for deleting refresh tokens when a user signs out inorder to clear it from the db as well as any expired tokens to prevent old tokens from being used. It also allows for early clearing in any tokens when a user is updated inorder to force a clean signin.
 - Post Service: This service controls the creation, editing and deleting of the various notes that get saved in the database. It also controls links between notes their carers and the linked clients.
-- Client Service: This controls the creation, editing and deletion of clients from the database. It also controls which clients and linked to which users.
+- Client Service: This controls the creation, editing and deletion of clients from the database. It also controls which clients are linked to which users.
 - Icon Service: This is a simple service that is reponsible for custom icon generations, which are generated as SVG's which are able to be saved to the database. When a user is deleted their Icon will be deleted as well inorder to avoid data bloat.
 - File Service: This service allows for the processing of uploaded data from the front end. Including skipping over existing entries if only 1 of them are able to exisit at a time.
 
