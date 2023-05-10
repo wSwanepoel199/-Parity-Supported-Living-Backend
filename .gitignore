@@ -30,3 +30,6 @@ key.pem
 # package-lock.json
 /package-lock.json
 
+# db migrations
+./prisma/migrations
+
