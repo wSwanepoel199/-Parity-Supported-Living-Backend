@@ -8,6 +8,8 @@ require('dotenv').config();
 var app = require('../app');
 var debug = require('debug')('psl-app-back:server');
 var http = require('http');
+var OS = require('os');
+const cpus = OS.cpus();
 // var https = require('https');
 // var fs = require('fs');
 
@@ -16,6 +18,11 @@ var http = require('http');
 //   cert: fs.readFileSync('./certs/cert.pem')
 // };
 
+/**
+ * displays number of available CPU cores for threadpooling
+ */
+console.log("# of CPU cores ", cpus.length);
+process.env.UV_THREADPOOL_SIZE = cpus.length;
 
 /**
  * Get port from environment and store in Express.
