@@ -113,6 +113,39 @@ class ClientService {
     }
     return;
   }
+  static async get(data) {
+    console.log(data);
+    console.log(data.params.id);
+    console.log(data.user);
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          userId: data.user
+        }
+      });
+
+      const client = await prisma.client.findUnique({
+        where: {
+          clientId: data.params.id
+        },
+        include: {
+          carers: true,
+          posts: true
+        }
+      });
+
+      if (user.role !== "Admin" && client.carers.some(carer => carer.userId === data.user)) {
+        throw createError.Unauthorized("You may not access this Client's Details");
+      }
+
+      return client;
+
+    }
+    catch (err) {
+      console.error(err);
+      handlePrismaErrors(err);
+    }
+  }
   static async all(user) {
     let allClients;
     try {
@@ -124,8 +157,12 @@ class ClientService {
       if (loggedinUser.role !== 'Carer') {
         allClients = await prisma.client.findMany({
           include: {
-            carers: true,
-            posts: true
+            carers: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
           }
         });
       } else {
@@ -138,8 +175,12 @@ class ClientService {
             }
           },
           include: {
-            carers: true,
-            posts: true
+            carers: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
           }
         });
       }

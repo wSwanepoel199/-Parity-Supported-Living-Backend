@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.get('/', Auth.user, clientController.all);
 
+router.get('/get/:id', Auth.user, clientController.get);
+
 router.post('/create', Auth.user, Auth.admin, clientController.create);
 
 router.post('/remove', Auth.user, Auth.admin, clientController.remove);
