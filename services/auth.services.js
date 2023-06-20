@@ -107,7 +107,8 @@ class AuthService {
     data.email = data.email.toLowerCase();  // converts provided email to lower case
 
     let updatedUser; //sets variable for later use
-    const { clients, ...user } = data;
+    const { clients, posts, ...user } = data;
+    console.log(user);
     try {
       const refreshTokens = await prisma.refreshToken.findMany({
         where: {
@@ -271,6 +272,37 @@ class AuthService {
       handlePrismaErrors(err); //prisma error handler
     }
     return;
+  }
+  static async get(data) {
+    console.log(data.params.id);
+    console.log(data.user);
+    try {
+      const admin = await prisma.user.findUnique({
+        where: {
+          userId: data.user
+        }
+      });
+
+      const user = await prisma.user.findUnique({
+        where: {
+          userId: data.params.id
+        },
+        include: {
+          posts: true,
+          clients: true
+        }
+      });
+
+      if (admin.role !== "Admin") {
+        throw createError.Unauthorized("You may not access this User");
+      }
+      return user;
+
+    }
+    catch (err) {
+      console.error(err);
+      handlePrismaErrors(err);
+    }
   }
   static async all() {
     let allUsers; //variable for later use

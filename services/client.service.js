@@ -160,7 +160,8 @@ class ClientService {
             carers: {
               select: {
                 firstName: true,
-                lastName: true
+                lastName: true,
+                email: true
               }
             }
           }

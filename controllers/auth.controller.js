@@ -1,11 +1,11 @@
-const auth = require('../services/auth.services');
+const authService = require('../services/auth.services');
 const icon = require('../services/icon.service');
 const createError = require('http-errors');
 
 class AuthController {
   static register = async (req, res, next) => {
     try {
-      const user = await auth.register(req.body);
+      const user = await authService.register(req.body);
       await icon.genIcon(user.userId);
       res.status(201).json({
         status: 201,
@@ -20,7 +20,7 @@ class AuthController {
   };
   static login = async (req, res, next) => {
     try {
-      const data = await auth.login(req.body);
+      const data = await authService.login(req.body);
       const avatar = await icon.fetchIcon(data.user.userId);
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
@@ -55,7 +55,7 @@ class AuthController {
   };
   static newUserLogin = async (req, res, next) => {
     try {
-      const user = await auth.passReset(req.body);
+      const user = await authService.passReset(req.body);
       const avatar = await icon.fetchIcon(user.userId);
       res.status(200).json({
         status: 200,
@@ -75,7 +75,7 @@ class AuthController {
   };
   static update = async (req, res, next) => {
     try {
-      await auth.update(req.body);
+      await authService.update(req.body);
       res.status(200).json({
         status: 200,
         data: {
@@ -89,7 +89,7 @@ class AuthController {
   };
   static logout = async (req, res, next) => {
     try {
-      await auth.logout(req.cookies, req.body);
+      await authService.logout(req.cookies, req.body);
       if (process.env.NODE_ENV === "production") {
         res.clearCookie('jwt', {
           httpOnly: true,
@@ -114,7 +114,7 @@ class AuthController {
   };
   static delete = async (req, res, next) => {
     try {
-      await auth.delete(req.body);
+      await authService.delete(req.body);
       res.status(200).json({
         status: 200,
         data: {
@@ -126,9 +126,24 @@ class AuthController {
       next(createError(err.statusCode, err.message));
     }
   };
+  static get = async (req, res, next) => {
+    try {
+      const user = await authService.get(req);
+      res.status(200).json({
+        status: 200,
+        data: {
+          message: "Successfully Found User",
+          data: user
+        }
+      });
+    }
+    catch (err) {
+      next(createError(err.statusCode, err.message));
+    }
+  };
   static all = async (req, res, next) => {
     try {
-      const users = await auth.all();
+      const users = await authService.all();
       res.status(200).json({
         status: 200,
         data: {
