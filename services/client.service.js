@@ -114,9 +114,6 @@ class ClientService {
     return;
   }
   static async get(data) {
-    console.log(data);
-    console.log(data.params.id);
-    console.log(data.user);
     try {
       const user = await prisma.user.findUnique({
         where: {
@@ -129,7 +126,13 @@ class ClientService {
           clientId: data.params.id
         },
         include: {
-          carers: true,
+          carers: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true
+            }
+          },
           posts: true
         }
       });
@@ -137,6 +140,8 @@ class ClientService {
       if (user.role !== "Admin" && client.carers.some(carer => carer.userId === data.user)) {
         throw createError.Unauthorized("You may not access this Client's Details");
       }
+
+      client.name = `${client?.firstName} ${client?.lastName}`;
 
       return client;
 

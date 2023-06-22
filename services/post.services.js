@@ -102,7 +102,7 @@ class PostService {
     try {
       post = await prisma.post.delete({
         where: {
-          postId: data.postId
+          postId: data.params.id
         }
       });
       return post;

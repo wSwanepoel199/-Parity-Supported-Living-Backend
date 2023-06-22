@@ -33,7 +33,7 @@ class PostController {
   };
   static delete = async (req, res, next) => {
     try {
-      await PostService.delete(req.body);
+      await PostService.delete(req);
       res.status(200).json({
         status: 200,
         data: {
