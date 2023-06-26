@@ -114,7 +114,7 @@ class AuthController {
   };
   static delete = async (req, res, next) => {
     try {
-      await authService.delete(req.body);
+      await authService.delete(req);
       res.status(200).json({
         status: 200,
         data: {

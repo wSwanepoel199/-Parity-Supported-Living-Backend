@@ -237,7 +237,7 @@ class AuthService {
     try {
       user = await prisma.user.findUnique({   // finds user to delete and deletes
         where: {
-          userId: data.userId
+          userId: data.params.id
         }
       });
       if (user) {
@@ -274,8 +274,6 @@ class AuthService {
     return;
   }
   static async get(data) {
-    console.log(data.params.id);
-    console.log(data.user);
     try {
       const admin = await prisma.user.findUnique({
         where: {
@@ -292,10 +290,10 @@ class AuthService {
           clients: true
         }
       });
-
       if (admin.role !== "Admin") {
         throw createError.Unauthorized("You may not access this User");
       }
+      user.name = `${user?.firstName} ${user?.lastName}`;
       return user;
 
     }
