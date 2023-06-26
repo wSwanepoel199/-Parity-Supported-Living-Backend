@@ -10,7 +10,7 @@ router.get('/get/:id', Auth.user, clientController.get);
 
 router.post('/create', Auth.user, Auth.admin, clientController.create);
 
-router.post('/remove', Auth.user, Auth.admin, clientController.remove);
+router.get('/delete/:id', Auth.user, Auth.admin, clientController.remove);
 
 router.put('/update', Auth.user, Auth.admin, clientController.update);
 

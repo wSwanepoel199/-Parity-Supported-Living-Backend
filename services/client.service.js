@@ -32,10 +32,12 @@ class ClientService {
       handlePrismaErrors(err);
     }
   }
-  static async remove(client) {
+  static async remove(data) {
     try {
       await prisma.client.delete({
-        where: client
+        where: {
+          clientId: data.params.id
+        }
       });
       return;
     }

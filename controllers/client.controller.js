@@ -37,7 +37,7 @@ class ClientController {
   };
   static remove = async (req, res, next) => {
     try {
-      await ClientService.remove(req.body);
+      await ClientService.remove(req);
       res.status(200).json({
         status: 200,
         data: {
