@@ -132,7 +132,8 @@ class ClientService {
             select: {
               firstName: true,
               lastName: true,
-              email: true
+              email: true,
+              userId: true
             }
           },
           posts: true
