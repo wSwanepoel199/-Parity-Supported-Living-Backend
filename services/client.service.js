@@ -1,5 +1,6 @@
 const prisma = require('../lib/prisma');
 const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const createError = require('http-errors');
 
 class ClientService {
   static async create(data) {
@@ -139,10 +140,7 @@ class ClientService {
           posts: true
         }
       });
-
-      if (user.role !== "Admin" && client.carers.some(carer => carer.userId === data.user)) {
-        throw createError.Unauthorized("You may not access this Client's Details");
-      }
+      if (user.role !== "Admin" && client.carers.some(carer => carer.userId !== data.user)) throw createError.Unauthorized("You may not access this Client's Details");
 
       client.name = `${client?.firstName} ${client?.lastName}`;
 
