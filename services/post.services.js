@@ -4,30 +4,34 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class PostService {
   static async create(data) {
-    try {
-      const client = await prisma.client.findUnique({
-        where: {
-          clientId: data.clientId
-        }
-      });
+    if (data.clientId) {
+      try {
+        const client = await prisma.client.findUnique({
+          where: {
+            clientId: data.clientId
+          }
+        });
 
-      data.clientName = `${client.firstName} ${client?.lastName}`;
+        data.clientName = `${client.firstName} ${client?.lastName}`;
+      }
+      catch (err) {
+        handlePrismaErrors(err);
+        console.log(err);
+      }
     }
-    catch (err) {
-      handlePrismaErrors(err);
-      console.log(err);
-    }
-    try {
-      const carer = await prisma.user.findUnique({
-        where: {
-          userId: data.carerId
-        }
-      });
-      data.carerName = `${carer.firstName} ${carer?.lastName}`;
-    }
-    catch (err) {
-      handlePrismaErrors(err);
-      console.log(err);
+    if (data.carerId) {
+      try {
+        const carer = await prisma.user.findUnique({
+          where: {
+            userId: data.carerId
+          }
+        });
+        data.carerName = `${carer.firstName} ${carer?.lastName}`;
+      }
+      catch (err) {
+        handlePrismaErrors(err);
+        console.log(err);
+      }
     }
     try {
       const newPost = await prisma.post.create({
