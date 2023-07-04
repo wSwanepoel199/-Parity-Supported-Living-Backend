@@ -18,6 +18,18 @@ const cpus = OS.cpus();
 //   cert: fs.readFileSync('./certs/cert.pem')
 // };
 
+const getNetworkAddress = () => {
+  for (const interfaceDetails of Object.values(OS.networkInterfaces())) {
+    if (!interfaceDetails) continue;
+
+    for (const details of interfaceDetails) {
+      const { address, family, internal } = details;
+
+      if (family === 'IPv4' && !internal) return address;
+    }
+  }
+};
+
 /**
  * displays number of available CPU cores for threadpooling
  */
@@ -43,11 +55,47 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
+const getServerDetails = () => {
+  // Make sure to close the server once the process ends.
+
+  // Once the server has started, get the address the server is running on
+  // and return it.
+  const details = server.address();
+  let local;
+  let network;
+  const previous = port;
+  if (typeof details === 'string') {
+    local = details;
+  } else if (typeof details === 'object' && details.port) {
+    // According to https://www.ietf.org/rfc/rfc2732.txt, IPv6 addresses
+    // should be surrounded by square brackets (only the address, not the
+    // port).
+    let address;
+    if (details.address === '::') address = 'localhost';
+    else if (details.family === 'IPv6') address = `[${details.address}]`;
+    else address = details.address;
+    const ip = getNetworkAddress();
+
+    // const protocol = useSsl ? 'https' : 'http';
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+    local = `${protocol}://${address}:${details.port}`;
+    network = ip ? `${protocol}://${ip}:${details.port}` : undefined;
+  }
+
+  return {
+    local,
+    network,
+    previous,
+  };
+};
+
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port, () => console.log(`server running on port ${port}`));
+server.listen(port, () => console.log(`server running on port ${port}
+local ip: ${getServerDetails().local}
+network ip: ${getServerDetails().network}`));
 server.on('error', onError);
 server.on('listening', onListening);
 // server.once('request', (req) => { console.log(req); });
