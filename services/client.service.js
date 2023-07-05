@@ -117,14 +117,20 @@ class ClientService {
     return;
   }
   static async get(data) {
+    let user;
+    let client;
     try {
-      const user = await prisma.user.findUnique({
+      user = await prisma.user.findUnique({
         where: {
           userId: data.user
         }
       });
-
-      const client = await prisma.client.findUnique({
+    } catch (err) {
+      console.error(err);
+      handlePrismaErrors(err);
+    }
+    try {
+      client = await prisma.client.findUnique({
         where: {
           clientId: data.params.id
         },
@@ -140,27 +146,32 @@ class ClientService {
           posts: true
         }
       });
-      if (user.role !== "Admin" && client.carers.some(carer => carer.userId !== data.user)) throw createError.Unauthorized("You may not access this Client's Details");
-
-      client.name = `${client?.firstName} ${client?.lastName}`;
-
-      return client;
-
-    }
-    catch (err) {
+    } catch (err) {
       console.error(err);
       handlePrismaErrors(err);
     }
+    if (user.role !== "Admin" && client.carers.some(carer => { carer.userId !== data.user; })) {
+      throw createError.Unauthorized("You may not access this Client's Details");
+    }
+    client.name = `${client?.firstName} ${client?.lastName}`;
+    return client;
+
   }
   static async all(user) {
     let allClients;
+    let loggedinUser;
     try {
-      const loggedinUser = await prisma.user.findUnique({
+      loggedinUser = await prisma.user.findUnique({
         where: {
           userId: user
         }
       });
-      if (loggedinUser.role !== 'Carer') {
+    }
+    catch (err) {
+      handlePrismaErrors(err);
+    }
+    if (loggedinUser.role !== 'Carer') {
+      try {
         allClients = await prisma.client.findMany({
           include: {
             carers: {
@@ -172,7 +183,11 @@ class ClientService {
             }
           }
         });
-      } else {
+      } catch (err) {
+        handlePrismaErrors(err);
+      }
+    } else {
+      try {
         allClients = await prisma.client.findMany({
           where: {
             carers: {
@@ -186,28 +201,29 @@ class ClientService {
               select: {
                 firstName: true,
                 lastName: true,
-                email: true
+                email: true,
+                userId: true
               }
             }
           }
         });
+      } catch (err) {
+        handlePrismaErrors(err);
       }
-      if (allClients) {
-        await allClients.forEach((client) => client.name = `${client.firstName} ${client?.lastName}`);
-        return allClients;
-      } else {
-        return [];
-      }
-
-      // const allClients = await prisma.client.findMany({
-      //   include: {
-      //     carers: true
-      //   }
-      // }); //pulls all clients from db
-      // return allClients;
-    } catch (err) {
-      handlePrismaErrors(err); //prisma error handler
     }
+    if (allClients) {
+      await allClients.forEach((client) => client.name = `${client.firstName} ${client?.lastName}`);
+      return allClients;
+    } else {
+      return [];
+    }
+
+    // const allClients = await prisma.client.findMany({
+    //   include: {
+    //     carers: true
+    //   }
+    // }); //pulls all clients from db
+    // return allClients;
   }
 }
 

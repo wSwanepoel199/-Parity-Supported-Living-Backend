@@ -38,21 +38,16 @@ class AuthService {
     }
 
     user.email = user.email.toLowerCase(); // converts provided email to lower case cause case insensitivity does not appear to be working
-    try {
-      const newUser = await prisma.user.create({    // creates new user
-        data: {
-          ...user,
-          clients: {
-            connect: parsedClients
-          }
+    const newUser = await prisma.user.create({    // creates new user
+      data: {
+        ...user,
+        clients: {
+          connect: parsedClients
         }
-      });
+      }
+    });
 
-      return newUser;   // returns new user object
-    } catch (err) {
-      handlePrismaErrors(err);  // handles prisma specific erroes
-    }
-    return;
+    return newUser;   // returns new user object
   }
   // logs in existing user
   static async login(data) {
