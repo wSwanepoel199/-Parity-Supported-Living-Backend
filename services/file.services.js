@@ -319,6 +319,9 @@ class FileService {
             case "date": {
               return [k, v = new Date(parsedPost.date).toISOString()];
             }
+            case "Notes": {
+              return [k.toLowerCase(), v.toString()];
+            }
             default: {
               return [k.toLowerCase(), v];
             }
@@ -327,6 +330,7 @@ class FileService {
       );
       if (parsedPost.carerId) {
         try {
+          console.log("userCheck");
           const carerCheck = await prisma.user.findUnique({
             where: {
               userId: parsedPost.carerId
@@ -335,6 +339,7 @@ class FileService {
           if (!carerCheck) delete parsedPost.carerId;
         }
         catch (err) {
+          console.log("userCheckFail");
           handlePrismaErrors(err);
           delete parsedPost.carerId;
         }

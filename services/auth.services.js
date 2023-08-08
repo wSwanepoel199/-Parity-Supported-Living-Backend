@@ -38,21 +38,16 @@ class AuthService {
     }
 
     user.email = user.email.toLowerCase(); // converts provided email to lower case cause case insensitivity does not appear to be working
-    try {
-      const newUser = await prisma.user.create({    // creates new user
-        data: {
-          ...user,
-          clients: {
-            connect: parsedClients
-          }
+    const newUser = await prisma.user.create({    // creates new user
+      data: {
+        ...user,
+        clients: {
+          connect: parsedClients
         }
-      });
+      }
+    });
 
-      return newUser;   // returns new user object
-    } catch (err) {
-      handlePrismaErrors(err);  // handles prisma specific erroes
-    }
-    return;
+    return newUser;   // returns new user object
   }
   // logs in existing user
   static async login(data) {
@@ -107,7 +102,8 @@ class AuthService {
     data.email = data.email.toLowerCase();  // converts provided email to lower case
 
     let updatedUser; //sets variable for later use
-    const { clients, ...user } = data;
+    const { clients, posts, ...user } = data;
+    console.log(user);
     try {
       const refreshTokens = await prisma.refreshToken.findMany({
         where: {
@@ -236,7 +232,7 @@ class AuthService {
     try {
       user = await prisma.user.findUnique({   // finds user to delete and deletes
         where: {
-          userId: data.userId
+          userId: data.params.id
         }
       });
       if (user) {
@@ -272,6 +268,35 @@ class AuthService {
     }
     return;
   }
+  static async get(data) {
+    try {
+      const admin = await prisma.user.findUnique({
+        where: {
+          userId: data.user
+        }
+      });
+
+      const user = await prisma.user.findUnique({
+        where: {
+          userId: data.params.id
+        },
+        include: {
+          posts: true,
+          clients: true
+        }
+      });
+      if (admin.role !== "Admin") {
+        throw createError.Unauthorized("You may not access this User");
+      }
+      user.name = `${user?.firstName} ${user?.lastName}`;
+      return user;
+
+    }
+    catch (err) {
+      console.error(err);
+      handlePrismaErrors(err);
+    }
+  }
   static async all() {
     let allUsers; //variable for later use
     try {
@@ -280,7 +305,7 @@ class AuthService {
           clients: true
         }
       }); //pulls all users from db
-      const users = allUsers.filter(item => item.firstName !== "ParityAdmin"); //filters out man admin to prevent locking out of app
+      const users = allUsers.filter(item => item.id !== 1); //filters out man admin to prevent locking out of app
       // runs forEach on found users to remove passwords and add in name for front end compatibility
       await users.forEach((user) => {
         user.name = `${user.firstName} ${user.lastName !== null ? user.lastName : ''}`;

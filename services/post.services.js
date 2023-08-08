@@ -4,6 +4,35 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class PostService {
   static async create(data) {
+    if (data.clientId) {
+      try {
+        const client = await prisma.client.findUnique({
+          where: {
+            clientId: data.clientId
+          }
+        });
+
+        data.clientName = `${client.firstName} ${client?.lastName}`;
+      }
+      catch (err) {
+        handlePrismaErrors(err);
+        console.log(err);
+      }
+    }
+    if (data.carerId) {
+      try {
+        const carer = await prisma.user.findUnique({
+          where: {
+            userId: data.carerId
+          }
+        });
+        data.carerName = `${carer.firstName} ${carer?.lastName}`;
+      }
+      catch (err) {
+        handlePrismaErrors(err);
+        console.log(err);
+      }
+    }
     try {
       const newPost = await prisma.post.create({
         data
@@ -77,7 +106,7 @@ class PostService {
     try {
       post = await prisma.post.delete({
         where: {
-          postId: data.postId
+          postId: data.params.id
         }
       });
       return post;
@@ -86,6 +115,41 @@ class PostService {
       handlePrismaErrors(err);
     }
     return;
+  }
+  static async get(data) {
+    let post;
+    // console.log(data);
+    console.log(data.params.id);
+    console.log(data.user);
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          userId: data.user
+        }
+      });
+
+      const post = await prisma.post.findUnique({
+        where: {
+          postId: data.params.id
+        },
+        include: {
+          carer: true,
+          client: true
+        }
+      });
+
+      if (user.role !== "Admin" && data.user !== post.carerId) {
+        console.log(user);
+        console.log(post);
+        throw createError.Unauthorized("You may not access this note");
+      }
+      return post;
+
+    }
+    catch (err) {
+      console.error(err);
+      handlePrismaErrors(err);
+    }
   }
   static async all(user) {
     let allPosts;
@@ -101,8 +165,18 @@ class PostService {
             date: 'desc'
           },
           include: {
-            carer: true,
-            client: true
+            carer: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            },
+            client: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
           }
         });
       } else {
@@ -117,8 +191,18 @@ class PostService {
             date: 'desc'
           },
           include: {
-            carer: true,
-            client: true
+            carer: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            },
+            client: {
+              select: {
+                firstName: true,
+                lastName: true
+              }
+            }
           }
         });
       }

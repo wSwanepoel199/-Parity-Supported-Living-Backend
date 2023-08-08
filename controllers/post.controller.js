@@ -1,11 +1,11 @@
-const post = require('../services/post.services');
+const PostService = require('../services/post.services');
 const createError = require('http-errors');
 
 
 class PostController {
   static create = async (req, res, next) => {
     try {
-      await post.create(req.body);
+      await PostService.create(req.body);
       res.status(201).json({
         status: 201,
         data: {
@@ -19,7 +19,7 @@ class PostController {
   };
   static update = async (req, res, next) => {
     try {
-      await post.update(req.body);
+      await PostService.update(req.body);
       res.status(200).json({
         status: 200,
         data: {
@@ -33,7 +33,7 @@ class PostController {
   };
   static delete = async (req, res, next) => {
     try {
-      await post.delete(req.body);
+      await PostService.delete(req);
       res.status(200).json({
         status: 200,
         data: {
@@ -45,9 +45,24 @@ class PostController {
       next(createError(err.statusCode, err.message));
     }
   };
+  static get = async (req, res, next) => {
+    try {
+      const note = await PostService.get(req);
+      res.status(200).json({
+        status: 200,
+        data: {
+          message: "Note Found",
+          data: note
+        }
+      });
+    }
+    catch (err) {
+      next(createError(err.statusCode, err.message));
+    }
+  };
   static all = async (req, res, next) => {
     try {
-      const posts = await post.all(req.user);
+      const posts = await PostService.all(req.user);
       res.status(200).json({
         status: 200,
         data: {

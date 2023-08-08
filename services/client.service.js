@@ -1,5 +1,6 @@
 const prisma = require('../lib/prisma');
 const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const createError = require('http-errors');
 
 class ClientService {
   static async create(data) {
@@ -32,10 +33,12 @@ class ClientService {
       handlePrismaErrors(err);
     }
   }
-  static async remove(client) {
+  static async remove(data) {
     try {
       await prisma.client.delete({
-        where: client
+        where: {
+          clientId: data.params.id
+        }
       });
       return;
     }
@@ -113,22 +116,78 @@ class ClientService {
     }
     return;
   }
+  static async get(data) {
+    let user;
+    let client;
+    try {
+      user = await prisma.user.findUnique({
+        where: {
+          userId: data.user
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      handlePrismaErrors(err);
+    }
+    try {
+      client = await prisma.client.findUnique({
+        where: {
+          clientId: data.params.id
+        },
+        include: {
+          carers: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+              userId: true
+            }
+          },
+          posts: true
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      handlePrismaErrors(err);
+    }
+    if (user.role !== "Admin" && client.carers.some(carer => { carer.userId !== data.user; })) {
+      throw createError.Unauthorized("You may not access this Client's Details");
+    }
+    client.name = `${client?.firstName} ${client?.lastName}`;
+    return client;
+
+  }
   static async all(user) {
     let allClients;
+    let loggedinUser;
     try {
-      const loggedinUser = await prisma.user.findUnique({
+      loggedinUser = await prisma.user.findUnique({
         where: {
           userId: user
         }
       });
-      if (loggedinUser.role !== 'Carer') {
+    }
+    catch (err) {
+      handlePrismaErrors(err);
+    }
+    if (loggedinUser.role !== 'Carer') {
+      try {
         allClients = await prisma.client.findMany({
           include: {
-            carers: true,
-            posts: true
+            carers: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true
+              }
+            }
           }
         });
-      } else {
+      } catch (err) {
+        handlePrismaErrors(err);
+      }
+    } else {
+      try {
         allClients = await prisma.client.findMany({
           where: {
             carers: {
@@ -138,27 +197,33 @@ class ClientService {
             }
           },
           include: {
-            carers: true,
-            posts: true
+            carers: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+                userId: true
+              }
+            }
           }
         });
+      } catch (err) {
+        handlePrismaErrors(err);
       }
-      if (allClients) {
-        await allClients.forEach((client) => client.name = `${client.firstName} ${client?.lastName}`);
-        return allClients;
-      } else {
-        return [];
-      }
-
-      // const allClients = await prisma.client.findMany({
-      //   include: {
-      //     carers: true
-      //   }
-      // }); //pulls all clients from db
-      // return allClients;
-    } catch (err) {
-      handlePrismaErrors(err); //prisma error handler
     }
+    if (allClients) {
+      await allClients.forEach((client) => client.name = `${client.firstName} ${client?.lastName}`);
+      return allClients;
+    } else {
+      return [];
+    }
+
+    // const allClients = await prisma.client.findMany({
+    //   include: {
+    //     carers: true
+    //   }
+    // }); //pulls all clients from db
+    // return allClients;
   }
 }
 

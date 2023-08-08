@@ -1,6 +1,6 @@
 const createError = require("http-errors");
 
-const whitelist = ["http://192.168.56.101:3000", "http://192.168.56.101:33937", "https://paritysl.herokuapp.com", "https://paritysl-dev.herokuapp.com", "http://192.168.1.2:3000", "http://localhost:3000", 'https://localhost:3000'];
+const whitelist = process.env.FRONT_END.split(", ");
 
 const corsOptions = {
   origin: (origin, callback) => {
