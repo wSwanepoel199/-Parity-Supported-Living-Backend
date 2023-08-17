@@ -302,10 +302,15 @@ class AuthService {
     try {
       allUsers = await prisma.user.findMany({
         include: {
-          clients: true
+          clients: {
+            select: {
+              firstName: true,
+              lastName: true,
+            }
+          }
         }
       }); //pulls all users from db
-      const users = allUsers.filter(item => item.id !== 1); //filters out man admin to prevent locking out of app
+      const users = allUsers.filter(item => item.id !== 1); //filters out main admin to prevent locking out of app
       // runs forEach on found users to remove passwords and add in name for front end compatibility
       await users.forEach((user) => {
         user.name = `${user.firstName} ${user.lastName !== null ? user.lastName : ''}`;
