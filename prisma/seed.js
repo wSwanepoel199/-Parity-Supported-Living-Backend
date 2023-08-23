@@ -2,9 +2,8 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-const userService = require('../services/auth.services');
-const iconService = require('../services/icon.service');
-
+const userService = require("../services/auth.services");
+const iconService = require("../services/icon.service");
 
 // email String?
 // name String?
@@ -13,26 +12,11 @@ const iconService = require('../services/icon.service');
 // posts Post[] @relation("Carer")
 const users = [
   {
-    email: 'admin@admin.com',
-    name: 'admin',
-    password: 'admin',
-    role: 'Admin'
+    email: "admin@admin.com",
+    name: "admin",
+    password: "admin",
+    role: "Admin",
   },
-  {
-    email: 'user1@email.com',
-    name: 'Diam vero',
-    password: "user1"
-  },
-  {
-    email: 'user2@email.com',
-    name: 'Rebum dolor',
-    password: "user2"
-  },
-  {
-    email: 'user3@email.com',
-    name: 'Ut takimata',
-    password: "user3"
-  }
 ];
 
 // carerId Int
@@ -41,55 +25,61 @@ const users = [
 // date DateTime?
 // kilos Int?
 // Notes String?
-const posts = [
-  {
-    client: "Mood scarce",
-    hours: 4,
-    date: new Date(new Date() - Math.random() * (1e+12)),
-    kilos: 1,
-    notes: "Et rebum rebum diam eirmod dolor lorem rebum sanctus, at erat sed elitr sadipscing diam, sea amet diam vero labore."
-  },
-  {
-    client: "Mood scarce",
-    hours: 6,
-    date: new Date(new Date() - Math.random() * (1e+12)),
-    kilos: 3,
-    notes: "Dolor voluptua rebum dolores ut ipsum ipsum sadipscing, magna lorem et dolor dolore labore eos amet eos eos, erat gubergren."
-  },
-  {
-    client: "Then would",
-    hours: 3,
-    date: new Date(new Date() - Math.random() * (1e+12)),
-    kilos: 2,
-    notes: "Dolor diam no at sit et sea est ea, duo diam no takimata ea ea et sed. Eos sadipscing accusam."
-  },
-  {
-    client: "Dwell sadness",
-    hours: 20,
-    date: new Date(new Date() - Math.random() * (1e+12)),
-    kilos: 200,
-    notes: "Dolor amet rebum sed et ipsum at accusam invidunt. Voluptua eirmod clita magna stet, dolore takimata sadipscing magna invidunt et. Amet voluptua diam lorem stet gubergren, est dolore takimata accusam dolore lorem dolor eos lorem duo. Dolores tempor kasd lorem."
-  },
-  {
-    client: "Mood scarce",
-    hours: 1,
-    date: new Date(new Date() - Math.random() * (1e+12)),
-    kilos: 2,
-    notes: "To spoiled he mothernot ungodly deem change a ere into.."
-  },
-  {
-    date: new Date(new Date() - Math.random() * (1e+12)),
-    notes: "Clita tempor justo labore ea eos eirmod et, ipsum sed et amet lorem, sed clita accusam consetetur amet ut amet sit takimata, tempor lorem amet invidunt invidunt takimata invidunt at dolor diam, lorem consetetur sea sanctus sed ipsum invidunt dolor,."
-  }
-];
+// const posts = [
+//   {
+//     client: "Mood scarce",
+//     hours: 4,
+//     date: new Date(new Date() - Math.random() * 1e12),
+//     kilos: 1,
+//     notes:
+//       "Et rebum rebum diam eirmod dolor lorem rebum sanctus, at erat sed elitr sadipscing diam, sea amet diam vero labore.",
+//   },
+//   {
+//     client: "Mood scarce",
+//     hours: 6,
+//     date: new Date(new Date() - Math.random() * 1e12),
+//     kilos: 3,
+//     notes:
+//       "Dolor voluptua rebum dolores ut ipsum ipsum sadipscing, magna lorem et dolor dolore labore eos amet eos eos, erat gubergren.",
+//   },
+//   {
+//     client: "Then would",
+//     hours: 3,
+//     date: new Date(new Date() - Math.random() * 1e12),
+//     kilos: 2,
+//     notes:
+//       "Dolor diam no at sit et sea est ea, duo diam no takimata ea ea et sed. Eos sadipscing accusam.",
+//   },
+//   {
+//     client: "Dwell sadness",
+//     hours: 20,
+//     date: new Date(new Date() - Math.random() * 1e12),
+//     kilos: 200,
+//     notes:
+//       "Dolor amet rebum sed et ipsum at accusam invidunt. Voluptua eirmod clita magna stet, dolore takimata sadipscing magna invidunt et. Amet voluptua diam lorem stet gubergren, est dolore takimata accusam dolore lorem dolor eos lorem duo. Dolores tempor kasd lorem.",
+//   },
+//   {
+//     client: "Mood scarce",
+//     hours: 1,
+//     date: new Date(new Date() - Math.random() * 1e12),
+//     kilos: 2,
+//     notes: "To spoiled he mothernot ungodly deem change a ere into..",
+//   },
+//   {
+//     date: new Date(new Date() - Math.random() * 1e12),
+//     notes:
+//       "Clita tempor justo labore ea eos eirmod et, ipsum sed et amet lorem, sed clita accusam consetetur amet ut amet sit takimata, tempor lorem amet invidunt invidunt takimata invidunt at dolor diam, lorem consetetur sea sanctus sed ipsum invidunt dolor,.",
+//   },
+// ];
 
 async function seed() {
   console.log("Seeding....");
   console.log(process.env.ENV);
   const admin = {
-    email: "Admin@paritysl.com",
+    email: "admin@paritysl.com",
     password: process.env.ADMIN_PASSWORD,
-    name: "ParityAdmin",
+    firstName: "ParityAdmin",
+    lastName: "",
     role: "Admin",
     resetPassword: false,
   };
@@ -97,8 +87,8 @@ async function seed() {
   admin.email = admin.email.toLowerCase();
   let user = await prisma.user.findUnique({
     where: {
-      email: admin.email
-    }
+      email: admin.email,
+    },
   });
   if (user) {
     console.log(`${user.firstName} exists`);
@@ -112,8 +102,8 @@ async function seed() {
       u.email = u.email.toLowerCase();
       let user = await prisma.user.findUnique({
         where: {
-          email: u.email
-        }
+          email: u.email,
+        },
       });
       if (user) {
         console.log(`user ${user.firstName} already exists`);
@@ -126,7 +116,7 @@ async function seed() {
     }
     for (const p of posts) {
       const post = await prisma.post.create({
-        data: p
+        data: p,
       });
       console.log(`Created post withg id: ${post.id}`);
     }

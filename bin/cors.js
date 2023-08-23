@@ -1,6 +1,6 @@
 const createError = require("http-errors");
 
-const whitelist = process.env.FRONT_END.split(", ");
+const whitelist = process.env.FRONT_END?.split(", ") || "";
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -12,9 +12,9 @@ const corsOptions = {
       callback(createError.Unauthorized("Blocked By Cors"));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'PATCH'],
+  methods: ["GET", "POST", "PUT", "PATCH"],
   credentials: true,
-  allowedHeaders: ['Content-Type', "Content-Length", 'Authorization'],
+  allowedHeaders: ["Content-Type", "Content-Length", "Authorization"],
   optionsSuccessStatus: 200,
 };
 
