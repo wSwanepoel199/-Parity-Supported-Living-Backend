@@ -5,7 +5,7 @@ const refreshToken = require('../services/refreshToken.services');
 const RefreshTokenController = require('../controllers/refreshToken.controller');
 
 class Auth {
-  static user = async (req, res, next) => {
+  static checkIfAuthed = async (req, res, next) => {
     if (!req.headers.authorization) return next(createError.Unauthorized('Not Authorised'));
     const token = req.headers.authorization.split(' ')[1];
     if (!token) {
@@ -19,7 +19,7 @@ class Auth {
       next(createError.Unauthorized({ message: err.message, trigger: 'auth' }));
     });
   };
-  static admin = async (req, res, next) => {
+  static checkIfAdmin = async (req, res, next) => {
     const foundUser = await prisma.user.findFirst({
       where: {
         userId: req.user

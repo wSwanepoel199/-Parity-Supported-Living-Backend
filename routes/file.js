@@ -4,6 +4,6 @@ const Auth = require('../middleware/auth');
 
 const router = express.Router();
 
-router.post('/upload', Auth.user, Auth.admin, fileController.upload);
+router.post('/upload', Auth.checkIfAuthed, Auth.checkIfAdmin, fileController.upload);
 
 module.exports = router;
