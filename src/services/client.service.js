@@ -1,5 +1,5 @@
-const prisma = require('../lib/prisma');
-const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const prisma = require('@lib/prisma');
+const handlePrismaErrors = require('@utils/prismaErrorHandler');
 const createError = require('http-errors');
 
 class ClientService {

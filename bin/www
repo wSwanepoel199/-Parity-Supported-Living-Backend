@@ -5,7 +5,8 @@
  */
 
 require('dotenv').config();
-var app = require('../app');
+require('module-alias/register');
+var app = require('@src/app');
 var debug = require('debug')('psl-app-back:server');
 var http = require('http');
 var OS = require('os');

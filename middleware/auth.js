@@ -1,8 +1,8 @@
 const jwt = require('../utils/jwt');
 const createError = require('http-errors');
 const prisma = require('../lib/prisma');
-const refreshToken = require('../services/refreshToken.services');
-const RefreshTokenController = require('../controllers/refreshToken.controller');
+const refreshToken = require('@services/refreshToken.services');
+const RefreshTokenController = require('@controllers/refreshToken.controller');
 
 class Auth {
   static checkIfAuthed = async (req, res, next) => {

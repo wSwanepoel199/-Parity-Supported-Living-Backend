@@ -1,6 +1,6 @@
 const createError = require("http-errors");
-const prisma = require("../lib/prisma");
-const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const prisma = require("@lib/prisma");
+const handlePrismaErrors = require('@utils/prismaErrorHandler');
 
 class PostService {
   static async create(data) {

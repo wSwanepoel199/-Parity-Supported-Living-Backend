@@ -13,7 +13,7 @@ const postRouter = require('./routes/posts');
 const fileRouter = require('./routes/file');
 const clientRouter = require('./routes/clients');
 
-const corsOptions = require('./bin/cors');
+const corsOptions = require('../bin/cors');
 
 const app = express();
 
