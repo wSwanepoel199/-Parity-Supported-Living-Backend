@@ -1,9 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
+require('module-alias/register');
 
 const prisma = new PrismaClient();
 
-const userService = require("../services/auth.services");
-const iconService = require("../services/icon.service");
+const userService = require("../src/services/user.services");
+const iconService = require("../src/services/icon.service");
 
 // email String?
 // name String?
