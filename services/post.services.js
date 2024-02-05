@@ -210,7 +210,6 @@ class PostService {
         });
       }
       if (allPosts) {
-        console.table(allPosts);
         return allPosts;
       } else {
         return [];
