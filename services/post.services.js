@@ -4,6 +4,21 @@ const handlePrismaErrors = require('../utils/prismaErrorHandler');
 
 class PostService {
   static async create(data) {
+    if (data.carerId) {
+      try {
+        const carer = await prisma.user.findUnique({
+          where: {
+            userId: data.carerId
+          }
+        });
+        data.carerName = `${carer.firstName} ${carer?.lastName}`;
+        console.log(data.carerName, " attempted to create a note");
+      }
+      catch (err) {
+        handlePrismaErrors(err);
+        console.log(err);
+      }
+    }
     if (data.clientId) {
       try {
         const client = await prisma.client.findUnique({
@@ -19,24 +34,12 @@ class PostService {
         console.log(err);
       }
     }
-    if (data.carerId) {
-      try {
-        const carer = await prisma.user.findUnique({
-          where: {
-            userId: data.carerId
-          }
-        });
-        data.carerName = `${carer.firstName} ${carer?.lastName}`;
-      }
-      catch (err) {
-        handlePrismaErrors(err);
-        console.log(err);
-      }
-    }
     try {
       const newPost = await prisma.post.create({
         data
       });
+
+      console.log(data.carerName, "Successfully created note");
       return newPost;
     } catch (err) {
       // if (!newPost) {
@@ -207,6 +210,7 @@ class PostService {
         });
       }
       if (allPosts) {
+        console.table(allPosts);
         return allPosts;
       } else {
         return [];

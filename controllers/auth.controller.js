@@ -20,6 +20,7 @@ class AuthController {
   };
   static login = async (req, res, next) => {
     try {
+      console.log("User logging in");
       const data = await authService.login(req.body);
       const avatar = await icon.fetchIcon(data.user.userId);
       if (process.env.NODE_ENV === "production") {
@@ -38,6 +39,7 @@ class AuthController {
           // maxAge: (1000 * 60 * 10)
         });
       }
+      console.log(user.name, ` Successfuly logged in`);
       res.status(200).json({
         status: 200,
         data: {
