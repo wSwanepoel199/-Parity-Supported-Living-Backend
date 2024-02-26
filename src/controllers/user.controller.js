@@ -21,7 +21,7 @@ class UserController {
   static login = async (req, res, next) => {
     try {
       console.log("User logging in");
-      const data = await authService.login(req.body);
+      const data = await userService.login(req.body);
       const avatar = await icon.fetchIcon(data.user.userId);
       if (process.env.NODE_ENV === "production") {
         res.cookie('jwt', data.token, {
