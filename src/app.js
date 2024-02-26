@@ -7,14 +7,13 @@ const cors = require('cors');
 const compression = require('compression');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const authRouter = require('./routes/auth');
+const userRouter = require('./routes/user');
 const refreshRouter = require('./routes/refesh');
 const postRouter = require('./routes/posts');
 const fileRouter = require('./routes/file');
 const clientRouter = require('./routes/clients');
 
-const corsOptions = require('./bin/cors');
+const corsOptions = require('../bin/cors');
 
 const app = express();
 
@@ -34,8 +33,7 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/auth', authRouter);
+app.use('/auth', userRouter);
 app.use('/refresh', refreshRouter);
 app.use('/posts', postRouter);
 app.use('/files', fileRouter);

@@ -1,7 +1,7 @@
-const prisma = require('../lib/prisma');
+const prisma = require('@lib/prisma');
 const createError = require('http-errors');
-const jwt = require('../utils/jwt');
-const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const jwt = require('@utils/jwt');
+const handlePrismaErrors = require('@utils/prismaErrorHandler');
 
 class RefreshTokenService {
   static async create(userId, email) {

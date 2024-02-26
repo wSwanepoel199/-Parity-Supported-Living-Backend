@@ -1,11 +1,11 @@
-const prisma = require('../lib/prisma');
+const prisma = require('@lib/prisma');
 const bcrypt = require('bcryptjs');
 const createError = require('http-errors');
-const jwt = require('../utils/jwt');
-const exclude = require('../utils/exlude');
+const jwt = require('@utils/jwt');
+const exclude = require('@utils/exlude');
 const RefreshTokenService = require('./refreshToken.services');
 const IconService = require('./icon.service');
-const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const handlePrismaErrors = require('@utils/prismaErrorHandler');
 
 
 class AuthService {

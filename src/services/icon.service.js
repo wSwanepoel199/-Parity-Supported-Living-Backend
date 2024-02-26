@@ -1,6 +1,6 @@
-const prisma = require('../lib/prisma');
+const prisma = require('@lib/prisma');
 const createError = require('http-errors');
-const handlePrismaErrors = require('../utils/prismaErrorHandler');
+const handlePrismaErrors = require('@utils/prismaErrorHandler');
 
 class IconService {
   static async genIcon(userId) {

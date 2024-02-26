@@ -27,14 +27,14 @@ touch .env
 Once the .env file is created open in and define the following values
 
 ```text
-ACCESS_TOKEN_SECRET: A randomly generated string used for signing short term jwi tokens
-REFRESH_TOKEN_SECRET: A randomly generated string used for signing long term jwi tokens
+ACCESS_TOKEN_SECRET= A randomly generated string used for signing short term jwi tokens
+REFRESH_TOKEN_SECRET= A randomly generated string used for signing long term jwi tokens
 
-PORT: the port for the server to use
+PORT= the port for the server to use
 
-DATABASE_URL: The uri for database intended to be used with the server, a PostgreSQL database is recommended
+DATABASE_URL= The uri for database intended to be used with the server, a PostgreSQL database is recommended
 
-FRONT_END: A list of front end URLs for CORS, each url should be seperated by a ', '
+FRONT_END= A list of front end URLs for CORS, each url should be seperated by a ', '
 
 ADMIN_PASSWORD= the password that will be used for the default admin user
 ```
@@ -69,7 +69,7 @@ PSL Notes Backend is intended to be used with [psl-notes](https://github.com/wSw
 
 PSL Notes Backend provides several services for the front end;
 
-- Auth Service: Allows for the creation user details and management of signed in users via an Authentication Token system that employes short term Auth Tokens with can be freely refreshed if a much more long term Refresh Token is provided. It also allows for users to be edited and deleted from the db, in addition to which clients are linked to specific users.
+- User Service: Allows for the creation user details and management of signed in users via an Authentication Token system that employes short term Auth Tokens with can be freely refreshed if a much more long term Refresh Token is provided. It also allows for users to be edited and deleted from the db, in addition to which clients are linked to specific users.
 - Refresh Token Service: This service allows for the creation and storage of refresh tokens. It tracks exisiting refresh tokesn via storing them in the database. It also allows for deleting refresh tokens when a user signs out inorder to clear it from the db as well as any expired tokens to prevent old tokens from being used. It also allows for early clearing in any tokens when a user is updated inorder to force a clean signin.
 - Post Service: This service controls the creation, editing and deleting of the various notes that get saved in the database. It also controls links between notes their carers and the linked clients.
 - Client Service: This controls the creation, editing and deletion of clients from the database. It also controls which clients are linked to which users.
@@ -81,6 +81,8 @@ PSL Notes Backend provides several services for the front end;
 [Express](https://expressjs.com/) is used as the main backend server and [PostgreSQL](https://www.postgresql.org/) as the database. [Prisma.IO](https://www.prisma.io/) is used as the middle man between the Express server and the PostgreSQL database. [Nodemon](https://nodemon.io/) is used for an easier development experience and [Dicebear](https://www.dicebear.com/) is used for the user icon generation.
 
 [JSONWebToken](https://jwt.io/) is used for auth and refresh token registration and validation and [BcryptJS](https://github.com/kelektiv/node.bcrypt.js/) is used for password encryption.
+
+[module-alias](https://github.com/ilearnio/module-alias) allows for the creation of aliases to allow for pre-defining routes to specific folders for easier non path dependant importing.
 
 ## Contributions
 
