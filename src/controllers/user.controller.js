@@ -39,7 +39,7 @@ class UserController {
           // maxAge: (1000 * 60 * 10)
         });
       }
-      console.log(data.name, ` Successfuly logged in`);
+      console.log(data.user.name, ` Successfuly logged in`);
       res.status(200).json({
         status: 200,
         data: {
