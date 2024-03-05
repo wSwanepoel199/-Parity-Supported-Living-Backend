@@ -304,6 +304,7 @@ class AuthService {
         include: {
           clients: {
             select: {
+              clientId: true,
               firstName: true,
               lastName: true,
             }

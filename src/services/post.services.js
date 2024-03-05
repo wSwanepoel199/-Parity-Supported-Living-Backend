@@ -171,13 +171,15 @@ class PostService {
             carer: {
               select: {
                 firstName: true,
-                lastName: true
+                lastName: true,
+                userId: true,
               }
             },
             client: {
               select: {
                 firstName: true,
-                lastName: true
+                lastName: true,
+                clientId: true,
               }
             }
           }
@@ -197,13 +199,15 @@ class PostService {
             carer: {
               select: {
                 firstName: true,
-                lastName: true
+                lastName: true,
+                userId: true,
               }
             },
             client: {
               select: {
                 firstName: true,
-                lastName: true
+                lastName: true,
+                clientId: true,
               }
             }
           }
