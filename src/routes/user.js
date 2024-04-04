@@ -20,5 +20,7 @@ router.post('/logout', userController.logout);
 
 router.get('/delete/:id', Auth.checkIfAuthed, Auth.checkIfAdmin, userController.delete);
 
+router.put('/tableFilters', Auth.checkIfAuthed, userController.updateTableFilters);
+
 
 module.exports = router;

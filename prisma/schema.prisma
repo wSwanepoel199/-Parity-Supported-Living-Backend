@@ -23,6 +23,7 @@ model User {
   clients Client[]
   refreshToken RefreshToken[] @relation("Token")
   icon Icon? @relation("Icon")
+  filteredColumns String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

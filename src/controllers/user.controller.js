@@ -39,7 +39,7 @@ class UserController {
           // maxAge: (1000 * 60 * 10)
         });
       }
-      console.log(data.name, ` Successfuly logged in`);
+      console.log(data.user.name, ` Successfuly logged in`);
       res.status(200).json({
         status: 200,
         data: {
@@ -151,6 +151,22 @@ class UserController {
         data: {
           message: "All Users Found",
           data: users
+        }
+      });
+    }
+    catch (err) {
+      next(createError(err.statusCode, err.message));
+    }
+  };
+  static updateTableFilters = async (req, res, next) => {
+    console.log(req);
+    try {
+      const user = await userService.updateTableFilters(req);
+      res.status(200).json({
+        status: 200,
+        data: {
+          message: 'Successfully updated table filters',
+          tableFilter: user.filteredColumns
         }
       });
     }
