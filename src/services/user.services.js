@@ -323,6 +323,31 @@ class AuthService {
       handlePrismaErrors(err); //prisma error handler
     }
   }
+  static async updateTableFilters(data) {
+    console.log(data.body);
+    try {
+      const user = await prisma.user.findUnique({
+        where: {
+          userId: data.user
+        }
+      });
+      console.log(user);
+      if (user) {
+        const tableFilter = JSON.stringify({ ...JSON.parse(user.filteredColumns), ...data.body });
+        const updatedUser = await prisma.user.update({
+          where: {
+            userId: data.user
+          },
+          data: {
+            filteredColumns: tableFilter
+          }
+        });
+        return updatedUser;
+      }
+    } catch (err) {
+      handlePrismaErrors(err);
+    }
+  }
 }
 
 module.exports = AuthService;
